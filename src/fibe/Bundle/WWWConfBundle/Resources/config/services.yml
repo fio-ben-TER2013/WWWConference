@@ -1,0 +1,7 @@
+parameters:
+#    fibe_www_conf.example.class: fibe\Bundle\WWWConfBundle\Example
+
+services:
+#    fibe_www_conf.example:
+#        class: %fibe_www_conf.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
