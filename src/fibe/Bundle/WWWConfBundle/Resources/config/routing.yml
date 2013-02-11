@@ -1,3 +1,0 @@
-fibe_www_conf_homepage:
-    pattern:  /admin
-    defaults: { _controller: fibeWWWConfBundle:Admin:index }
