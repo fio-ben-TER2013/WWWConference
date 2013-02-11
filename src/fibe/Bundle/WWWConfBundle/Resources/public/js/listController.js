@@ -5,7 +5,7 @@
 
 $(document).ready(function() {
     var config=new JSONconfig();
-    var columns = ["name","start_at"];
+    var columns = ["name","start_at","location"];
      
     jQuery.ajax({ 
         url: config.simpleScheduleApiUrl,
@@ -45,8 +45,9 @@ function JSONEventListToHTMLArray(json,columns){
                 for(key in event) {
                     if($.inArray(key, columns)!=-1){
                         tre.append('<td>'+event[key]+'</td>');  
-                    }else if(key=='id'){
-                        tre.attr('onClick',"alert("+event[key]+")");
+                    }else if(key=='id'){ 
+                        tre.attr('onClick',"$(location).attr('href','app_dev.php/admin/link/"+xproperty.id+"/edit');")
+                           .css('cursor','pointer');
                     }
                 }
                 tbodye.append(tre);
