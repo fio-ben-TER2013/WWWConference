@@ -1,0 +1,16 @@
+{% extends "fibeWWWConfBundle::base.html.twig" %}
+
+{% block title %}Create a link{% endblock title %}
+{% block body %}
+
+{{ parent() }} 
+<div class="page-header">
+  <h1> Link a paper to its event</h1>
+</div>
+<form action="{{ path('admin_schedule_status_create') }}" method="post" {{ form_enctype(form) }}>
+    {{ form_widget(form) }}
+    <p>
+        <button type="submit" class="btn btn-primary">{% trans %}Create{% endtrans %}</button>
+    </p>
+</form>
+{% endblock body %}

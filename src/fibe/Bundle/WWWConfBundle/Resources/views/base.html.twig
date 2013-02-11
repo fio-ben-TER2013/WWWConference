@@ -1,17 +1,36 @@
-{% extends "::base.html.twig" %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}{% endblock %} - WWWConf</title>
+        <link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
+        {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+        {% endblock %}
 
-{% block stylesheets %} 
-    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.css" />
-    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-{% endblock %}
+    </head>
+    <body>
+        <div class="symfony-content">
+            {% block body %}
 
-{% block body %}
+                {% include "fibeWWWConfBundle::menu.html.twig" %}
 
-    {% include "fibeWWWConfBundle::menu.html.twig" %}
+            {% endblock %}
+        </div>
+        {% block javascripts %} 
+            <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+        {% endblock %}
+    </body>
+</html>
 
-{% endblock %}
 
-{% block javascripts %} 
-    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
-{% endblock %}
+
+
+
+
+
+
+
+
