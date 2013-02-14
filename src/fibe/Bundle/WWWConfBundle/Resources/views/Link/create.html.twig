@@ -7,10 +7,19 @@
 <div class="page-header">
   <h1> Link a paper to its event</h1>
 </div>
-<form action="{{ path('admin_schedule_status_create') }}" method="post" {{ form_enctype(form) }}>
+<form id="createEvent" method="post" {{ form_enctype(form) }}>
     {{ form_widget(form) }}
     <p>
-        <button type="submit" class="btn btn-primary">{% trans %}Create{% endtrans %}</button>
+        <button type="submit" class="btn btn-primary" onclick="create()>{% trans %}Create{% endtrans %}</button>
+    </p>
+</form>
+
+<form id="linkPublication" method="post">
+	<p>
+		<input type="text" id="auteur"/><label for="auteur">Auteur Publication :</label> 
+		<input type="text" id="titre"/><label for="titre">Titre Publication :</label> 
+		<input type="text" id="ID"/><label for="ID">ID Publication :</label> 
+        <button type="submit" class="btn btn-primary" onclick="link()">{% trans %}Create{% endtrans %}</button>
     </p>
 </form>
 {% endblock body %}
