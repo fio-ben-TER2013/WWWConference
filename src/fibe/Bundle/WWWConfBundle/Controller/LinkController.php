@@ -5,6 +5,10 @@ namespace fibe\Bundle\WWWConfBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
+use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\RecurChoiceType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType;
 /**
  * Link controller.
  *
@@ -27,7 +31,13 @@ class LinkController extends Controller
  */
     public function createAction()
     {
-        return array();
+        $entity = new Event();
+        $form   = $this->createForm(new EventType(), $entity);
+
+        return array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
     }
     
 /**
