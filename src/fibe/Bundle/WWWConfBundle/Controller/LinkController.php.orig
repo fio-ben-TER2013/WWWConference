@@ -5,10 +5,17 @@ namespace fibe\Bundle\WWWConfBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+<<<<<<< HEAD
+use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
+use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\RecurChoiceType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType;
+=======
 //On insere l'entity Event  de simple schedule
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
 //On insere le controlleur de Event 
 use SimpleScheduleBundle\Controller
+>>>>>>> ef4f6a1345961a9c183239a603d13fe85a437cab
 /**
  * Link controller.
  *
@@ -31,6 +38,15 @@ class LinkController extends Controller
  */
     public function createAction()
     {
+<<<<<<< HEAD
+        $entity = new Event();
+        $form   = $this->createForm(new EventType(), $entity);
+
+        return array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
+=======
 		
 		 // On crée un objet Article
   $event = new Event();
@@ -51,6 +67,7 @@ class LinkController extends Controller
     'form' => $form->createView(),
   ));
 	
+>>>>>>> ef4f6a1345961a9c183239a603d13fe85a437cab
     }
     
 /**
