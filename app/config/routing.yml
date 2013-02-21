@@ -11,10 +11,6 @@ fibe_www_conf:
 #    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
 #    prefix:   /_internal
 
-idci_exporter:
-    resource: "../../vendor/idci/exporter-bundle/IDCI/Bundle/ExporterBundle/Controller"
-    type:     annotation
-
 idci_simple_schedule:
     resource: "@IDCISimpleScheduleBundle/Controller/"
     type:     annotation

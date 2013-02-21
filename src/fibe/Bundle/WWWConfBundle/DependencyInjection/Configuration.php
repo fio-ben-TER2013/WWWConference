@@ -1,4 +1,4 @@
-w<?php
+<?php
 
 namespace fibe\Bundle\WWWConfBundle\DependencyInjection;
 
