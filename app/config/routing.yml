@@ -12,5 +12,5 @@ fibe_www_conf:
 #    prefix:   /_internal
 
 idci_simple_schedule:
-    resource: "@IDCISimpleScheduleBundle/Controller/"
+    resource: "../../vendor/idci/simple-schedule-bundle/IDCI/Bundle/SimpleScheduleBundle/Controller/"
     type:     annotation

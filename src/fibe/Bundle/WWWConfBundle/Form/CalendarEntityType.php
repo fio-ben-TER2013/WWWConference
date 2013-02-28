@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntity;
 use IDCI\Bundle\SimpleScheduleBundle\Repository\StatusRepository;
 use IDCI\Bundle\SimpleScheduleBundle\Form\EventListener\RecurFieldSubscriber;
+use IDCI\Bundle\SimpleScheduleBundle\Form\RecurType;
+
 
 abstract class CalendarEntityType extends AbstractType
 {
@@ -33,7 +35,7 @@ abstract class CalendarEntityType extends AbstractType
             ->add('startAt', 'datetime', array(
                 'data'    => new \DateTime('now'),
                 'years'   => range(date('Y')-1, date('Y')+5),
-                'minutes' => range(0, 59, 5)
+                'minutes' => range(0, 59, 5),
             ))
             /*->add('options', 'choice', array(
                 'choices' => array(
@@ -43,15 +45,18 @@ abstract class CalendarEntityType extends AbstractType
                 'multiple' => true,
                 'expanded' => true
             )) 
-            ->add('url')*/
+            ->add('url')*/ 
+            ->add('includedRule', new RecurType(), array(
+                'required' => false
+            ))
             ->add('description')
             /*->add('status', 'entity', array(
-                'class'         => 'IDCISimpleScheduleBundle:Status' ))
+                'class'         => 'IDCISimpleScheduleBundle:Status' ))*/
             ->add('classification', 'choice', array(
                 'choices'  => CalendarEntity::getClassifications(),
                 'multiple' => false,
                 'expanded' => true
-            ))*/
+            ))
             ->add('comment')
             ->add('organizer')
             ->add('contacts')

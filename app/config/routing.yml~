@@ -1,5 +1,5 @@
 fibe_www_conf:
-    resource: "@fibeWWWConfBundle/Resources/config/routing.yml"
+    resource: "@fibeWWWConfBundle/Controller/"
     prefix:   /
 
 # Internal routing configuration to handle ESI

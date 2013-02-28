@@ -6,9 +6,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 //On insere l'entity Event  de simple schedule
 use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType; 
+use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Event; 
-use fibe\Bundle\WWWConfBundle\Form\EventType; 
+//use fibe\Bundle\WWWConfBundle\Form\EventType; 
 //On insere le controlleur de Event 
 //use SimpleScheduleBundle\Controller
 /**
@@ -29,7 +30,7 @@ class LinkController extends Controller
     
 /**
  * @Route("/create", name="wwwconf_link_create")
- * @Template( )
+ * @Template()
  */
     public function createAction()
     {
@@ -39,7 +40,8 @@ class LinkController extends Controller
   
   $xproperty = new XProperty();
   $xproperty->setXNamespace('publication_uri');
-  $xproperty->setXKey(rand (0,9999999999));//todo AUTO_INCREMENT ??
+  $xproperty->setXKey(rand (0,9999999999));//todo AUTO_INCREMENT ??  
+  $formXProperty = $this->createForm(new XPropertyType(), $xproperty);
   
   $formXProperty = $this->createFormBuilder($xproperty)
                         ->add('xnamespace')
@@ -47,7 +49,7 @@ class LinkController extends Controller
                         ->add('xvalue', 'text',array(
                               'label' => ' ',
                               'attr'=> array('disabled'=>'')))
-                        ->add('calendarEntity',  'hidden')
+                        ->add('calendarEntity', null )
                         ->getForm();
  
   // On passe la méthode createView() du formulaire à la vue afin qu'elle puisse afficher le formulaire toute seule
@@ -64,8 +66,15 @@ class LinkController extends Controller
  */
     public function listAction()
     {
-	
+	    $em = $this->getDoctrine()->getManager();
+        $entities = $em->getRepository('IDCISimpleScheduleBundle:XProperty')->findAll(); 
+        
+        return array(
+            'xproperties' => $entities,
+        );
 		//Recuperer tous le evenements et les afficher
         return array();
     }
+    
+    
 }
