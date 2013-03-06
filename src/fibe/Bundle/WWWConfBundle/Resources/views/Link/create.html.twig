@@ -34,7 +34,13 @@
             {{ form_widget(formXProperty.xvalue) }}
             </div>
             <div style="visibility:hidden;height:0px;">{{ form_rest(formXProperty) }}</div> 
-            <button type="submit" disabled id="submitLinkButton" class="btn btn-large btn-success disabled" >{% trans %}<i class="icon-plus icon-white"></i> Link the event {% endtrans %} </button> 
+            <button type="submit" disabled id="submitLinkButton" class="btn btn-large btn-success disabled">
+                {# Translatable #}
+                {% trans %}
+                    <i class="icon-plus icon-white"></i> 
+                    Link the event 
+                {% endtrans %} 
+            </button> 
     </form>
 </div>
 
@@ -116,7 +122,7 @@
                     id=$(this).children("td").text();
                 }
             }) 
-            $("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity").append('<option value="'+id+'">').val(id); 
+            $("#form_calendarEntity").append('<option value="'+id+'">').val(id); 
             $.post("../schedule/xproperty/"+id+"/add", $("#uriLink").serialize())
         });
         /*$.ajax({ 
@@ -203,7 +209,7 @@ function storePoster(xml){
                         minLength: 1,
                         maxLength: 10,
                         select: function (event, ui) { 
-                            $("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(ui.item.uri).addClass("inputSuccess");
+                            $("#form_xvalue").val(ui.item.uri).addClass("inputSuccess");
                             $("#uriLink div").removeClass("warning").addClass("success");
                             $("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
                         }
