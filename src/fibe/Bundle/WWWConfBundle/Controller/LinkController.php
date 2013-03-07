@@ -47,7 +47,7 @@ class LinkController extends Controller
                         ->add('xvalue', 'text',array(
                               'label' => ' ',
                               'attr'=> array('disabled'=>'')))
-                        ->add('calendarEntity',  'hidden')
+                        ->add('calendarEntity',  null)
                         ->getForm();
  
   // On passe la méthode createView() du formulaire à la vue afin qu'elle puisse afficher le formulaire toute seule
