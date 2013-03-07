@@ -6,8 +6,10 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class fibeWWWConfBundle extends Bundle
 {
-        public function getParent()
-    {
-        return 'IDCISimpleScheduleBundle';
-    }
+	public function getParent()
+	{
+		return 'IDCISimpleScheduleBundle' ;
+	}
 }
+
+?>
