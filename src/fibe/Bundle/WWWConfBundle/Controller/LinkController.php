@@ -41,16 +41,7 @@ class LinkController extends Controller
   $xproperty = new XProperty();
   $xproperty->setXNamespace('publication_uri');
   $xproperty->setXKey(rand (0,9999999999));//todo AUTO_INCREMENT ??  
-  $formXProperty = $this->createForm(new XPropertyType(), $xproperty);
-  
-  $formXProperty = $this->createFormBuilder($xproperty)
-                        ->add('xnamespace')
-                        ->add('xkey')
-                        ->add('xvalue', 'text',array(
-                              'label' => ' ',
-                              'attr'=> array('disabled'=>'')))
-                        ->add('calendarEntity', null )
-                        ->getForm();
+  $formXProperty = $this->createForm(new XPropertyType(), $xproperty); 
  
   // On passe la méthode createView() du formulaire à la vue afin qu'elle puisse afficher le formulaire toute seule
       return  array(

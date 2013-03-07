@@ -122,7 +122,7 @@
                     id=$(this).children("td").text();
                 }
             }) 
-            $("#form_calendarEntity").append('<option value="'+id+'">').val(id); 
+            $("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity").append('<option value="'+id+'">').val(id); 
             $.post("../schedule/xproperty/"+id+"/add", $("#uriLink").serialize())
         });
         /*$.ajax({ 
@@ -209,7 +209,7 @@ function storePoster(xml){
                         minLength: 1,
                         maxLength: 10,
                         select: function (event, ui) { 
-                            $("#form_xvalue").val(ui.item.uri).addClass("inputSuccess");
+                            $("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(ui.item.uri).addClass("inputSuccess");
                             $("#uriLink div").removeClass("warning").addClass("success");
                             $("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
                         }
