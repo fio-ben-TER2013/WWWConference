@@ -34,13 +34,7 @@
             {{ form_widget(formXProperty.xvalue) }}
             </div>
             <div style="visibility:hidden;height:0px;">{{ form_rest(formXProperty) }}</div> 
-            <button type="submit" disabled id="submitLinkButton" class="btn btn-large btn-success disabled">
-                {# Translatable #}
-                {% trans %}
-                    <i class="icon-plus icon-white"></i> 
-                    Link the event 
-                {% endtrans %} 
-            </button> 
+            <button type="submit" disabled id="submitLinkButton" class="btn btn-large btn-success disabled" >{% trans %}<i class="icon-plus icon-white"></i> Link the event {% endtrans %} </button> 
     </form>
 </div>
 
@@ -51,6 +45,10 @@
             {{ form_row(formEvent.summary) }}
             {{ form_row(formEvent.categories) }}
             {{ form_row(formEvent.startAt) }}
+			<div class="input-append date form_datetime">
+				<input size="16" type="text" value="" readonly>
+				<span class="add-on"><i class="icon-th"></i></span>
+			</div>
             {{ form_row(formEvent.url) }}
             {{ form_row(formEvent.description) }}
             {{ form_row(formEvent.status) }}
@@ -68,51 +66,30 @@
         </p>
     </form>
 </div> 
+
+<div class="alert alert-success "></div>
+
 {% endblock body %}
-
-{% block stylesheets %} 
-        <link rel="stylesheet" type="text/css" href="{{ asset('bundles/fibewwwconf/css/datetimepicker.css') }}" /> 
-{% endblock %}
-
-{% block javascripts %}
-
-		<script type="text/javascript" src="http://rdfquery.googlecode.com/files/jquery.rdfquery.core.min-1.0.js"></script> 
-        <script src="{{ asset('bundles/fibewwwconf/js/bootstrap-datetimepicker.min.js') }}" type="text/javascript" ></script>
-        <script type="text/javascript">
-        $(document).ready(function() {
-//initialise le datepicker
-            $("#idci_simpleschedule_event_type_startAt").datetimepicker({format: 'yyyy-mm-ddThh:ii:ssZ'});
-            {# le format de la date doit etre : "2013-02-20T20:47:32+01:00", "2013-02-20T23:04:44+01:00"  #}
-            $( "form" ).each(function() {
-                $(this).submit(function(event) {
-                  event.preventDefault(); 
-                  submitForm($(this));
-                  return false;
-                });
-            });
-            $("#hiddenInputs div").hide();
-            
-    /*TODO
-     * -autocomplete
-     *  faire trois tableaux "auteur" "publication" et "uri" initialisés avec toute la bdd
-     *  la recherche pour l'autocomplete s'effectue dans ce tableau
-     *  le tableau est listé en dessous
-     *  lorsqu'on a trouvé avec l'autocomplete ou qu'on a cliké sur la liste:
-     *      le champ xvalue est remplie
-     *  
-     * -comfort du reste du form
-     *  fonction submit unique pour tous les form:
-     *      -requete sur le controleur link/add
-     */
-     
-     
-
-    /**
-     *Parses SimpleSchedule event query JSON file 
-     * then shows it in the <table> element
-     */
-    function submitForm(currentForm){  
+{%  block javascripts %}
+{{ parent() }} 
+        <script src="{{ asset('bundles/fibewwwconf/js/bootstrap-datetimepicker.min.js') }}" type="text/javascript" ></script>  
+		<script src="{{ asset('bundles/fibewwwconf/js/XpropertyAdd.js') }}" type="text/javascript" ></script>
+		<script src="{{ asset('bundles/fibewwwconf/js/PubliConfig.js') }}" type="text/javascript" ></script>
+		<script src="{{ asset('bundles/fibewwwconf/js/autocompletion.js') }}" type="text/javascript" ></script>
+		<script src="{{ asset('bundles/fibewwwconf/js/EventAdd.js') }}" type="text/javascript" ></script>
+        <script type="text/javascript" >
+        $(document).ready(function(){ 
+            $('form').submit(function(event) { 
+                    event.preventDefault();
+                    submitForm();
+                    return false;
+                }); 
+        });
         
+        
+      
+//Validate Link form (event+xproperty)
+function submitForm(){  
         var id="";
         $.post("{{ path('admin_schedule_event_create') }}", $("#event").serialize())
         .done(function(data) {
@@ -120,103 +97,18 @@
             $(data).find('tr').each(function(){ 
                 if($(this).children("th").text()=="Id"){
                     id=$(this).children("td").text();
+					
                 }
             }) 
-            $("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity").append('<option value="'+id+'">').val(id); 
-            $.post("../schedule/xproperty/"+id+"/add", $("#uriLink").serialize())
+			$("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity").append("<option value=" + id +">");
+			FormXproperty(id);
         });
-        /*$.ajax({ 
-		    
-		    type : "post",
-            url: "{{ path('admin_schedule_event_create') }}", 
-		    data :  $("#event").serialize(),  
-		    success : function(data){ 
-				          alert(data);
-		    },
-		    error : function(){ 
-				  alert("erreur");
-		    }
-	    });*/ 
     }
-    
-    var $prefix = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX swrc: <http://swrc.ontoware.org/ontology#> PREFIX swrc-ext: <http://www.cs.vu.nl/~mcaklein/onto/swrc_ext/2005/05#> PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> PREFIX ical: <http://www.w3.org/2002/12/cal/ical#> PREFIX swc: <http://data.semanticweb.org/ns/swc/ontology#>';
-    var $conferenceYear = "http://data.semanticweb.org/conference/www/2012/proceedings";
-
-    //Valeur du champ autoCompleté
-    var autoCompleteValue = "";
-    //Resultat XML de la requete sparql sur semantiqueweb 
-    
-    //Ensemble des valeurs retournées par la requete sparql pour l'autocompletion  
-    var $publications= [ ];
-    
-    var $querySuggestionAuthorTitle = $prefix +'SELECT DISTINCT ?uriPaper ?title ?name   WHERE  {     '+
-					         '   ?author        foaf:name       ?name.         '+
-					         '   ?author        foaf:made       ?uriPaper.     '+
-					         '   ?uriPaper      dc:title        ?title.        '+
-                             '   ?uriPaper      swc:isPartOf    <'+$conferenceYear+'>.'+
-                             '} '; 
-
-
-      //on récupere toutes les publi que l'on stocke dans le tableau $publications[ ]
-     $.ajax({ 
-		     
-		    type : "get",
-            url: 'http://data.semanticweb.org/sparql',
-            dataType: 'xml', 
-		    data :  {output : 'xml' ,query : $querySuggestionAuthorTitle},
-		    global :'false',
-		    async:'false',
-		    success : function(xml){ 
-				          storePoster(xml);
-		              } 
-	    });//Fin Ajax	 
-	    
-function storePoster(xml){
-        var i=0;
-	    $(xml).find("sparql > results > result").each(function(){
-	        if(i!=0 && $(this).find("binding[name='uriPaper'] :first-child").text()==$publications[i-1]['uri']){ 
-	            //si la publi a plusieurs auteurs
-	            $publications[i-1]['value']+=",  "+$(this).find("binding[name='name'] :first-child").text(); 
-	        }else{
-	            $publications[i]={ value: "", uri: ""  }
-	             $(this).find("binding").each(function(){
-	                if($(this).attr("name")=="uriPaper"){
-	                    $publications[i]['uri']=$(this).find(":first-child").text();
-	                }else if($(this).attr("name")=="title"){
-	                    $publications[i]['value'] = $(this).find(":first-child").text();
-	                }else if($(this).attr("name")=="name"){
-	                    $publications[i]['value']+=" BY : "+$(this).find(":first-child").text();
-	                }
-	             });
-	             
-	             i++; 
-	         }
-        }); 
-    }
-    
-
-  
-    //AutoCompletion pour les titres
-    $('#titreAuteur').keyup(function(){ 
-			    autoCompleteValue = $(this).val();  
-    }).keyup();
-
-    //Auto completion du champ auteur
-    $("#titreAuteur").autocomplete({
-					    autoFocus: true,
-                        source: $publications,
-                        delay: 0,
-                        minLength: 1,
-                        maxLength: 10,
-                        select: function (event, ui) { 
-                            $("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(ui.item.uri).addClass("inputSuccess");
-                            $("#uriLink div").removeClass("warning").addClass("success");
-                            $("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
-                        }
-    });//Fin autocomplete auteur
-
-});
-
-
+	
+        
         </script> 
-{% endblock %}
+    
+{% endblock javascripts %}
+
+
+

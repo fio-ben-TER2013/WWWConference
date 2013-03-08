@@ -7,6 +7,7 @@
         <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.css" />
 		 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
+		  <link rel="stylesheet" type="text/css" href="{{ asset('bundles/fibewwwconf/css/datetimepicker.css') }}" /> 
         {% block stylesheets %}
 		 
         {% endblock %}
@@ -18,13 +19,14 @@
 
                 {% include "fibeWWWConfBundle::adminmenu.html.twig" %}
 
-            {% endblock %}
+        {% endblock %}
         </div>
+		{% block javascripts %}
         <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
         <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
 		<script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-        {% block javascripts %} 
-        {% endblock %}
+		<script type="text/javascript" src="http://rdfquery.googlecode.com/files/jquery.rdfquery.core.min-1.0.js"></script>
+		{% endblock%}
     </body>
 </html>
 
