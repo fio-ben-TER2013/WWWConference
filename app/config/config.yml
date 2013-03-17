@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: @IDCISimpleScheduleBundle/Resources/config/config.yml }
+    - { resource: @IDCISimpleScheduleBundle/Resources/config/config.yml}
 
 framework:
     #esi:             ~

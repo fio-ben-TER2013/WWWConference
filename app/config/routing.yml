@@ -14,3 +14,7 @@ fibe_www_conf:
 idci_simple_schedule:
     resource: "../../vendor/idci/simple-schedule-bundle/IDCI/Bundle/SimpleScheduleBundle/Controller/"
     type:     annotation
+
+idci_exporter:
+    resource: "../../vendor/idci/exporter-bundle/IDCI/Bundle/ExporterBundle/Controller"
+    type:     annotation
