@@ -70,43 +70,46 @@
 <div class="alert alert-success "></div>
 
 {% endblock body %}
-{%  block javascripts %}
-{{ parent() }} 
-        <script src="{{ asset('bundles/fibewwwconf/js/bootstrap-datetimepicker.min.js') }}" type="text/javascript" ></script>  
-		<script src="{{ asset('bundles/fibewwwconf/js/XpropertyAdd.js') }}" type="text/javascript" ></script>
-		<script src="{{ asset('bundles/fibewwwconf/js/PubliConfig.js') }}" type="text/javascript" ></script>
-		<script src="{{ asset('bundles/fibewwwconf/js/autocompletion.js') }}" type="text/javascript" ></script>
-		<script src="{{ asset('bundles/fibewwwconf/js/EventAdd.js') }}" type="text/javascript" ></script>
-        <script type="text/javascript" >
-        $(document).ready(function(){ 
-            $('form').submit(function(event) { 
-                    event.preventDefault();
-                    submitForm();
-                    return false;
-                }); 
+{%  block javascripts %} 
+<script src="{{ asset('bundles/fibewwwconf/js/bootstrap-datetimepicker.min.js') }}" type="text/javascript" ></script>  
+<script src="{{ asset('bundles/fibewwwconf/js/datepickerTools.js') }}" type="text/javascript" ></script>
+<script src="{{ asset('bundles/fibewwwconf/js/EntityAdd.js') }}" type="text/javascript" ></script> 
+<script src="{{ asset('bundles/fibewwwconf/js/autocompletion.js') }}" type="text/javascript" ></script>
+<script src="{{ asset('bundles/fibewwwconf/js/SWDF.js') }}" type="text/javascript" ></script>
+
+<script type="text/javascript" >
+$(document).ready(function(){
+    var swdf=new SWDF();
+    swdf.buildQry();
+    autoComplete($('#titreAuteur'),swdf.doQry().toArray());
+
+    $('form').submit(function(event) {
+        //add event
+        var id=FormEventAdd("{{ path('admin_schedule_event_create') }}",$("#event"));
+        
+        //set its id in the Xprop form
+        $("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity")
+                .append("<option value=" + id +">")
+                .val(id);
+                
+        //add Xproperty 
+        var xpropertyAddUrl="{{ path( 'admin_schedule_xproperty_add', {'calendar_entity_id':'~id~'} ) }}".replace('~id~',id)
+        FormXpropertyAdd(xpropertyAddUrl,$("#uriLink"));
+        // animate validation then reload
+        $(".alert-success").append("<p>Link created</p>").show(500,function(){
+            $(".alert-success").fadeOut(3000,function(){
+                location.reload();
+            });
         });
-        
-        
-      
-//Validate Link form (event+xproperty)
-function submitForm(){  
-        var id="";
-        $.post("{{ path('admin_schedule_event_create') }}", $("#event").serialize())
-        .done(function(data) {
-            
-            $(data).find('tr').each(function(){ 
-                if($(this).children("th").text()=="Id"){
-                    id=$(this).children("td").text();
-					
-                }
-            }) 
-			$("#idci_bundle_simpleschedulebundle_xpropertytype_calendarEntity").append("<option value=" + id +">");
-			FormXproperty(id);
-        });
-    }
-	
-        
-        </script> 
+        event.preventDefault();
+        return false;
+    }); 
+});
+
+
+
+
+</script> 
     
 {% endblock javascripts %}
 

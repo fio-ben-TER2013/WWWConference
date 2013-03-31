@@ -279,12 +279,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IDCI-Consulting/AdminGeneratorBundle.git",
-                "reference": "527bf13c3bc9344f303904b333d75c41fbfd816b"
+                "reference": "e0cb21f265d0a2a0b6563b1a6140c09709982228"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IDCI-Consulting/AdminGeneratorBundle/zipball/527bf13c3bc9344f303904b333d75c41fbfd816b",
-                "reference": "527bf13c3bc9344f303904b333d75c41fbfd816b",
+                "url": "https://api.github.com/repos/IDCI-Consulting/AdminGeneratorBundle/zipball/e0cb21f265d0a2a0b6563b1a6140c09709982228",
+                "reference": "e0cb21f265d0a2a0b6563b1a6140c09709982228",
                 "shasum": ""
             },
             "require": {
@@ -318,7 +318,7 @@
                 "Admin Generator",
                 "doctrine"
             ],
-            "time": "2013-02-20 10:58:19"
+            "time": "2013-03-12 09:41:15"
         },
         {
             "name": "idci/exporter-bundle",
@@ -327,12 +327,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IDCI-Consulting/ExporterBundle.git",
-                "reference": "bd3cf1ad2a321e4e4b64b84db03b81bbb6dae063"
+                "reference": "681c682fe177de1d4a1689ab5593923b705edb10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IDCI-Consulting/ExporterBundle/zipball/bd3cf1ad2a321e4e4b64b84db03b81bbb6dae063",
-                "reference": "bd3cf1ad2a321e4e4b64b84db03b81bbb6dae063",
+                "url": "https://api.github.com/repos/IDCI-Consulting/ExporterBundle/zipball/681c682fe177de1d4a1689ab5593923b705edb10",
+                "reference": "681c682fe177de1d4a1689ab5593923b705edb10",
                 "shasum": ""
             },
             "require": {
@@ -367,7 +367,7 @@
                 "twig",
                 "xml"
             ],
-            "time": "2013-02-11 09:36:50"
+            "time": "2013-03-12 09:46:51"
         },
         {
             "name": "idci/simple-schedule-bundle",
@@ -376,12 +376,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IDCI-Consulting/SimpleScheduleBundle.git",
-                "reference": "7cb373a5196bae44795fde5abb78d2eff13d064d"
+                "reference": "94ee92f6fa395aaa2a9f10b3c9ee5cc4b6541b7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IDCI-Consulting/SimpleScheduleBundle/zipball/7cb373a5196bae44795fde5abb78d2eff13d064d",
-                "reference": "7cb373a5196bae44795fde5abb78d2eff13d064d",
+                "url": "https://api.github.com/repos/IDCI-Consulting/SimpleScheduleBundle/zipball/94ee92f6fa395aaa2a9f10b3c9ee5cc4b6541b7f",
+                "reference": "94ee92f6fa395aaa2a9f10b3c9ee5cc4b6541b7f",
                 "shasum": ""
             },
             "require": {
@@ -421,7 +421,7 @@
                 "web service",
                 "xml"
             ],
-            "time": "2013-02-12 15:34:54"
+            "time": "2013-03-12 08:50:26"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1359,12 +1359,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig-extensions.git",
-                "reference": "921799aaf05f88af749d72912d6b154dfeb9a03e"
+                "reference": "v1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig-extensions/zipball/921799aaf05f88af749d72912d6b154dfeb9a03e",
-                "reference": "921799aaf05f88af749d72912d6b154dfeb9a03e",
+                "url": "https://api.github.com/repos/fabpot/Twig-extensions/zipball/v1.0.0",
+                "reference": "v1.0.0",
                 "shasum": ""
             },
             "require": {
