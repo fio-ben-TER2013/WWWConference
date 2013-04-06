@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Api controller.
  *
- * makes :
+ * redirects :
  *     http://calendar.labs.idci.fr/api/schedule?uri=FOOBAR&PARAMS[]
- * go to :
+ * to :
  *     http://calendar.labs.idci.fr/api/schedule_event.jsonp?xproperty_value=FOOBAR&PARAMS[]
  *
  * @Route("/api/schedule")

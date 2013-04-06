@@ -42,8 +42,7 @@ class LinkController extends Controller
   $xproperty->setXNamespace('publication_uri');
   $xproperty->setXKey(rand (0,9999999999));//todo AUTO_INCREMENT ??  
   $formXProperty = $this->createForm(new XPropertyType(), $xproperty);
-  
-  // On passe la méthode createView() du formulaire à la vue afin qu'elle puisse afficher le formulaire toute seule
+   
       return  array(
         'formEvent'     => $formEvent->createView(),
         'formXProperty' => $formXProperty->createView()
