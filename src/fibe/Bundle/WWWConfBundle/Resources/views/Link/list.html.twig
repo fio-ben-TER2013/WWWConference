@@ -6,32 +6,41 @@
 <div class="page-header">
   <h1>Links</h1>
 </div> 
-<h3 class="span5">Publication</h3>
-<h3 class="span7">Event</h3> 
+<h3 class="span6">Link</h3>
+<h3 class="span6">Event</h3> 
+<br/> 
 <table id="eventlist" class="span12 table table-striped table-hover table-bordered">
+<thead>
+    <th>Namespace</th>
+    <th>Value</th>
+    <th>Summary
+    <th>Start/End At</th>
+    <th>Actions </th>
+</thead>
 {% for xproperty in xproperties %} 
-    
+     
     <tr>
-        <td class="span5">
+        <td style="max-width:80px;overflow:hidden;"> 
+            {{xproperty.xNamespace}}
+            </a>
+        </td>
+        <td style="max-width:300px;overflow:hidden;">
             <a href="{{xproperty.xValue}}">
             {{xproperty.xValue}}
             </a>
         </td>
-        <td  class="span3">
+        <td style="max-width:200px;overflow:hidden;">
             {{xproperty.calendarEntity.summary}} 
-        </td>
-        <td class="span2">
-            {{xproperty.calendarEntity.location}}
         </td> 
         <td class="span2"> 
              {% if xproperty.calendarEntity.startAt %}{{ xproperty.calendarEntity.startAt|date('Y-m-d H:i:s') }}{% endif %} 
              {{ xproperty.calendarEntity.duration }} 
              {% if xproperty.calendarEntity.endAt %}{{ xproperty.calendarEntity.endAt|date('Y-m-d H:i:s') }}{% endif %} 
         </td> 
-		 <td>
+		 <td class="span1">
                 <a class="btn btn-block" href="{{ path('admin_schedule_event_show', { 'id': xproperty.calendarEntity.id }) }}">{% trans %}show{% endtrans %}</a>
             </td>
-            <td>
+            <td class="span1">
                 <a class="btn btn-block btn-primary" href="{{ path('admin_schedule_event_edit', { 'id': xproperty.calendarEntity.id } ) }}">{% trans %}edit{% endtrans %}</a>
             </td>
 

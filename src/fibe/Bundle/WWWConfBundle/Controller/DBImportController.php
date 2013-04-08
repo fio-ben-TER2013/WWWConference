@@ -24,54 +24,64 @@ class DBImportController extends Controller
     public function importAction(Request $request)
     {  
         $JSONFile = json_decode($request->request->get('dataArray'),true); 
-        $em = $this->getDoctrine()->getManager();
-        
+        $em = $this->getDoctrine()->getManager(); 
         $events = $JSONFile['events'];
+        $entity=null;
+        $eventEntities= array();
         for($i=0;$i<count($events);$i++){
-            $current = $events[$i];
             $entity= new Event();
-            foreach ($current as $setter => $value) {
-                echo "Event->".$setter."(".$value.");<br />\n";
+            $current = $events[$i]; 
+            foreach ($current as $setter => $value) { 
+                if($setter=="setStartAt" || $setter=="setEndAt"){
+                    $value=new \DateTime(explode(' ', $value)[0], new \DateTimeZone(date_default_timezone_get()));
+                }
+                //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             } 
-            $em->persist($entity);
-            $events[$i]['entity']=$entity;
+            $em->persist($entity); 
+            array_push($eventEntities,$entity); 
         }
         
-        $xproperties = $JSONFile['xproperties'];
+        //echo "xproperties->\n";
+        $xproperties = $JSONFile['xproperties']; 
         for($i=0;$i<count($xproperties);$i++){
             $current = $xproperties[$i];
             $entity= new XProperty();
-            foreach ($current as $setter => $value) {
+            foreach ($current as $setter => $value) { 
                 if($setter=="setCalendarEntity"){
-                    $value=$events[$value]['entity'];
-                }
-                echo "XProperty->".$setter."(".$value.");<br />\n";
+                
+                    //echo "XProperty->->".$eventEntities[strval($value)]."->".$value.");\n";
+                    $value=$eventEntities[$value]; 
+                } 
+                //echo "XProperty->".$setter."(".$value.");\n";
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
             $entity->setXKey(rand (0,9999999999));
             $em->persist($entity);
         }
         
+        //echo "relations->\n";
         $relations = $JSONFile['relations'];
         for($i=0;$i<count($relations);$i++){
             $current = $relations[$i];
             $entity= new CalendarEntityRelation();
             foreach ($current as $setter => $value) {
                 if($setter=="setCalendarEntity" || $setter=="setRelatedTo"){
-                    $value=$events[$value]['entity'];
+                    $value=$eventEntities[$value]; 
                 }
-                echo "XProperty->".$setter."(".$value.");<br />\n";
+                //echo "Relation->".$setter."(".$value.");\n";
                 call_user_func_array(array($entity, $setter), array($value)); 
             } 
             $em->persist($entity);
         }
+        try{
+            $em->flush(); 
+            return new Response("ok");
+            }
+        catch (\Exception $e) {
+            return new Response(toString($e)); 
+        }
 
-        $em->flush(); 
-        // create a JSON-response with a 200 status code
-        $response = new Response(json_encode('done'));
-        $response->headers->set('Content-Type', 'application/json');
-        
     } 
 }
 
