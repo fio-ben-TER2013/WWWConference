@@ -1,13 +1,13 @@
  function run(){
  $('#myModal').modal(); 
-     $('#DBURLBtn').click(function(){
+     $('#DBURLBtn').off('click').click(function(){
       if( $('#DBURL').val()=="")return;
         var completeConfRdfURL =  $('#DBURL').val();
         
         
         
         var completeConfRdf=getRdfFromUrl(completeConfRdfURL) ;  
-        
+        if(!confirm("Are you want to import "+$('#DBURL').val()+" file ? "))return;
         var events= []; 
         var xproperties= [];
         var relations= [];
