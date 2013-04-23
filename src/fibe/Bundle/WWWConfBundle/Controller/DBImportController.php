@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Event; 
+use IDCI\Bundle\SimpleScheduleBundle\Entity\Category; 
+use IDCI\Bundle\SimpleScheduleBundle\Entity\Location; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation; 
 
@@ -25,23 +27,80 @@ class DBImportController extends Controller
     {  
         $JSONFile = json_decode($request->request->get('dataArray'),true); 
         $em = $this->getDoctrine()->getManager(); 
-        $events = $JSONFile['events'];
         $entity=null;
         $eventEntities= array();
-        for($i=0;$i<count($events);$i++){
-            $entity= new Event();
-            $current = $events[$i]; 
+        $locationEntities= array();
+        $categoryEntities= array();
+        
+        
+        //////////////////////  locations  //////////////////////
+        $locations = $JSONFile['locations'];
+        for($i=0;$i<count($locations);$i++){
+            $entity= new Location();
+            $current = $locations[$i];  
             foreach ($current as $setter => $value) { 
-                if($setter=="setStartAt" || $setter=="setEndAt"){
-                    $value=new \DateTime(explode(' ', $value)[0], new \DateTimeZone(date_default_timezone_get()));
-                }
                 //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             } 
             $em->persist($entity); 
+            array_push($locationEntities,$entity); 
+        } 
+        $em->flush();  
+        
+        
+        //////////////////////  categories  ////////////////////// 
+        $entities = $JSONFile['categories']; 
+        for($i=0;$i<count($entities);$i++){
+            $current = $entities[$i]; 
+            $existsTest = $this->getDoctrine()
+                               ->getRepository('IDCISimpleScheduleBundle:Category')
+                               ->findOneBy(array('name' => $current['setName']));
+            if($existsTest!=null){
+              array_push($categoryEntities,$existsTest); 
+              continue; //skip existing category
+            }
+            $entity= new Category();
+            foreach ($current as $setter => $value) {
+                //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
+                call_user_func_array(array($entity, $setter), array($value)); 
+            }
+            
+            $em->persist($entity); 
+            array_push($categoryEntities,$entity); 
+        }  
+          
+        $em->flush(); 
+        
+        //////////////////////  events  //////////////////////
+        $entities = $JSONFile['events'];
+        for($i=0;$i<count($entities);$i++){
+            $entity= new Event();
+            $current = $entities[$i];
+            foreach ($current as $setter => $value) {
+                if($setter=="setStartAt" || $setter=="setEndAt"){
+                    $value=new \DateTime(explode(' ', $value)[0], new \DateTimeZone(date_default_timezone_get()));
+                }
+                
+                if($setter=="setLocation"){
+                
+                    //echo "XProperty->->".$eventEntities[strval($value)]."->".$value.");\n";
+                    $value=$locationEntities[$value]; 
+                } 
+                
+                if($setter=="addCategorie"){
+                
+                    //echo "XProperty->->".$eventEntities[strval($value)]."->".$value.");\n";
+                    $value=$categoryEntities[$value];  
+                } 
+                    //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
+                call_user_func_array(array($entity, $setter), array($value)); 
+            }
+            $em->persist($entity); 
             array_push($eventEntities,$entity); 
         }
-        
+          
+        $em->flush(); 
+        //////////////////////  x prop  //////////////////////
         //echo "xproperties->\n";
         $xproperties = $JSONFile['xproperties']; 
         for($i=0;$i<count($xproperties);$i++){
@@ -59,7 +118,11 @@ class DBImportController extends Controller
             $entity->setXKey(rand (0,9999999999));
             $em->persist($entity);
         }
+         
         
+        $em->flush(); 
+        
+        //////////////////////  relations  //////////////////////
         //echo "relations->\n";
         $relations = $JSONFile['relations'];
         for($i=0;$i<count($relations);$i++){
@@ -73,15 +136,11 @@ class DBImportController extends Controller
                 call_user_func_array(array($entity, $setter), array($value)); 
             } 
             $em->persist($entity);
-        }
-        try{
-            $em->flush(); 
-            return new Response("ok");
-            }
-        catch (\Exception $e) {
-            return new Response(toString($e)); 
-        }
+        }   
+         
+        $em->flush();  
 
+        return new Response("ok");
     } 
 }
 
