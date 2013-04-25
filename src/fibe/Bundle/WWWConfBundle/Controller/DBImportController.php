@@ -78,7 +78,8 @@ class DBImportController extends Controller
             $current = $entities[$i];
             foreach ($current as $setter => $value) {
                 if($setter=="setStartAt" || $setter=="setEndAt"){
-                    $value=new \DateTime(explode(' ', $value)[0], new \DateTimeZone(date_default_timezone_get()));
+                    $date= explode(' ', $value);
+                    $value=new \DateTime($date[0], new \DateTimeZone(date_default_timezone_get()));
                 }
                 
                 if($setter=="setLocation"){
