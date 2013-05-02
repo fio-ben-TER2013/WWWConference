@@ -116,7 +116,7 @@ class DBImportController extends Controller
                 //echo "XProperty->".$setter."(".$value.");\n";
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
-            $entity->setXKey(rand (0,9999999999));
+            if(!$entity->getXKey())$entity->setXKey(rand (0,9999999999));
             $em->persist($entity);
         }
          

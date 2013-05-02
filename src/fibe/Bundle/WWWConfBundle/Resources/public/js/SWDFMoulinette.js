@@ -95,9 +95,35 @@
               
               addRelation(this,events.length-1);
                 
-              console.log(events);
-              console.log(relations);
+              //console.log(events);
+              //console.log(relations);
             } 
+        });
+        
+        
+        //////////////////////////////////////////////////////////////////////////
+        ///////////////////  third round for publication title  //////////////////
+        //////////////////////////////////////////////////////////////////////////
+        
+        $(completeConfRdf).children().children().each(function(index){
+            
+            if(this.nodeName=="swrc:InProceedings"){
+                //for each proceeding
+                var uri = $(this).attr('rdf:about'); 
+                for (var i=0;i<xproperties.length;i++){ 
+                
+                    if(xproperties[i]['setXValue']==uri){
+                    // if we find the corresponding xproperty  
+                        $(this).children().each(function(){
+                            //we look for the title
+                            if(this.nodeName=="dce:title"){  
+                              //to finally store it in the setXKey !
+                              xproperties[i]['setXKey']=$(this).text();
+                            }
+                        });
+                    }
+                }
+            }
         });
         
          
@@ -131,12 +157,27 @@
         //EVENT PARSE : CATCH START, END AT, LOCATION
         // THEN ADD 2 XPROPERTIES RELATED TO ITS EVENT AND PUBLICATION
         function doEvent(event){
-            var rtnArray={};
-            
+            var rtnArray={}; 
             $(event).children().each(function(){
                 if(this.nodeName=="rdfs:label"){   // LABEL 
                     // replace & caractere,  f*** JSON.stringify() ... 
-                    rtnArray['setSummary']=this.textContent.replace(/\x26/,"%26"); 
+                    rtnArray['setSummary']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");;
+                }else if(this.nodeName=="icaltzd:dtstart"){ // START AT
+                
+                    rtnArray['setStartAt']=$(this).text();
+                    
+                }else if(this.nodeName=="dce:description"){ // DESCRIPTION
+                
+                    rtnArray['setDescription']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                    
+                }else if(this.nodeName=="swrc:abstract"){ // ABSTRACT
+                
+                    rtnArray['setComment']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");;
+                    
+                }else if(this.nodeName=="icaltzd:dtend"){   // END AT
+                
+                    rtnArray['setEndAt']=$(this).text(); 
+                    
                 }else if(this.nodeName=="swc:hasRelatedDocument"){ // RELATED PUBLICATION XPROP
                 
                     var xproperty= {}; 
@@ -144,14 +185,6 @@
                     xproperty['setXNamespace']="publication_uri";
                     xproperty['setXValue']=$(this).attr('rdf:resource');
                     xproperties.push(xproperty);  
-                    
-                }else if(this.nodeName=="icaltzd:dtstart"){ // START AT
-                
-                    rtnArray['setStartAt']=$(this).text();
-                    
-                }else if(this.nodeName=="icaltzd:dtend"){   // END AT
-                
-                    rtnArray['setEndAt']=$(this).text(); 
                     
                 }else if(this.nodeName=="icaltzd:location"){   // LOCATION XPROP
                 
@@ -305,7 +338,7 @@
             alert('nothing imported');
             return;
           }
-          console.log('---------dataArray---------' );
+          console.log('---------sending---------' );
           console.log(dataArray ); 
           
           $.ajax({
