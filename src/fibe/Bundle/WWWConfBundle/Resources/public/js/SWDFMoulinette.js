@@ -1,6 +1,26 @@
 
 //PREPARE MODAL
- var modal='<!-- type "run()" in js console to import DB --><div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="myModalLabel">Import DB</h3></div><div class="modal-body"> <h3 class="text-warning">Be carefull ! this action isn\'t cancelable</h3><h4>Please, provide a complete Conf RDF File </h4> <h5 class="muted"><i>(such as : http://data.semanticweb.org/conference/www/2012/complete)</i></h5> <div class="input-append"><input type="text" id="DBURL" placeholder="Complete Conf rdf File"></input><button  id="DBURLBtn" data-dismiss="modal" class="btn"><i class="icon-download-alt"></i> import</button></div></div><div class="modal-footer"><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button> </div></div>';
+ var modal='<!-- type "run()" in js console to import DB -->\
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\
+      <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+      <h3 id="myModalLabel">Import DB</h3>\
+    </div>\
+    <div class="modal-body">\
+      <h3 class="text-warning">Be carefull ! this action isn\'t cancelable</h3>\
+      <h4>Please, provide a complete Conf RDF File </h4>\
+      <h5 class="muted"><i>(such as : http://data.semanticweb.org/conference/www/2012/complete)</i></h5>\
+        <div class="input-append">\
+          <input type="text" id="DBURL" placeholder="Complete Conf rdf File"></input>\
+          <button  id="DBURLBtn" data-dismiss="modal" class="btn">\
+            <i class="icon-download-alt"></i> \
+            import\
+          </button>\
+          </div>\
+        </div>\
+        <div class="modal-footer">\
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>\
+        </div>\
+      </div>';
  $('body').append($(modal).hide());
  function run(dbimportpath){ 
     $('#myModal').modal(); 
@@ -34,16 +54,16 @@
                 
                 $(this).children().each(function(){ 
                 
-                  if(this.nodeName=="rdfs:comment"){
-                  
-                    location['setDescription']= location.setDescription+$(this).text()+", ";
+                    if(this.nodeName=="rdfs:comment"){
                     
-                  }else if(this.nodeName=="rdfs:label"){ 
-                  
-                    location['setName']=$(this).text();
+                      location['setDescription']= location.setDescription+$(this).text()+", ";
+                      
+                    }else if(this.nodeName=="rdfs:label"){ 
                     
-                  }
-                  
+                      location['setName']=$(this).text();
+                      
+                    }
+                    
                 });
                 
                 //temporary attribute / flag
@@ -52,8 +72,8 @@
                 locations.push(location);
           }
         });
-        console.log('-------locations--------');
-        console.log(locations);
+        //console.log('-------locations--------');
+        //console.log(locations);
         
         
         
@@ -64,7 +84,7 @@
         $(completeConfRdf).children().children().each(function(index){
         
         /////////////////////         ROOT NODE         //////////////////
-            if(this.nodeName=="swc:ConferenceEvent"){ alert("swc:ConferenceEvent"+index)
+            if(this.nodeName=="swc:ConferenceEvent"){  
                 doEvent(this);
                 //console.log(events[events.length-1]);
                 //console.log(xproperties[xproperties.length-1]); 
@@ -72,10 +92,11 @@
         /////////////////////         EVENT NODE         //////////////////
               
               doEvent(this);
-              //console.log(events[events.length-1]);
-              //console.log(xproperties[xproperties.length-1]);
+              
               addRelation(this,events.length-1);
                 
+              console.log(events);
+              console.log(relations);
             } 
         });
         
@@ -150,7 +171,7 @@
                     interval=interval[interval.length-1].split("_");
                     
                     rtnArray['setStartAt']=interval[0];
-                    rtnArray['setEndAt']=interval[0]; 
+                    rtnArray['setEndAt']=interval[0];  
                     
                 }else if(this.nodeName=="dce:description"){  
                     rtnArray['setDescription']=$(this).text();
@@ -186,22 +207,23 @@
             $(event).children().each(function(){
                 if(this.nodeName=="swc:isSubEventOf"||this.nodeName=="swc:isSuperEventOf"){ 
                     var relatedToEventId=getEventIdFromXProp($(this).attr('rdf:resource'));
-                    if(relatedToEventId!=undefined){
+                    if(relatedToEventId!=undefined && events[relatedToEventId]!=undefined ){
                         var relationType = this.nodeName=="swc:isSubEventOf"?"PARENT":"CHILD";
                         var relation= {}; 
                         relation['setCalendarEntity']=relatedToEventId; 
                         relation['setRelationType']=relationType;
                         relation['setRelatedTo']=currentEventId;
-                        relations.push(relation);  
+                        relations.push(relation);
                         var relationType = this.nodeName=="swc:isSubEventOf"?"CHILD":"PARENT";
                         var relation= {};
                         relation['setCalendarEntity']=currentEventId;
                         relation['setRelationType']=relationType;
                         relation['setRelatedTo']=relatedToEventId;
-                        relations.push(relation);
+                        relations.push(relation); 
                         return true;
                     }else{
-                      //alert("undefined parentEventId of events["+(events.length-1)+"] : "+$(this).attr('rdf:resource')); 
+                      //console.log("Unknown parent");
+                      
                     }
                 }  
             });
@@ -238,7 +260,7 @@
             for (var i=0;i<xproperties.length;i++){
                 //alert(url+"\n"+xproperties[i]['setXValue']+"\n"+(xproperties[i]['setXValue']==url)+"\n"+i);
                 if(xproperties[i]['setXValue']==uri){
-                    return i; 
+                    return xproperties[i]['setCalendarEntity']; 
                 }
             }
             return undefined;
@@ -284,19 +306,14 @@
             return;
           }
           console.log('---------dataArray---------' );
-          console.log(dataArray );
-          console.log( JSON.stringify(dataArray ));
+          console.log(dataArray ); 
           
           $.ajax({
             type: "POST",
             url: dbimportpath,
             data: "dataArray=" + JSON.stringify(dataArray, null),
-            success:function(a, b, c) { 
-                console.log(a, b, c);
-            },
-            error:function(a, b, c) { 
-                console.log(a, b, c);
-            }
+            success:function(a,b,c){console.log(a,b,c)},
+            error:function(a,b,c){console.log(a,b,c)},
           });
           
        }

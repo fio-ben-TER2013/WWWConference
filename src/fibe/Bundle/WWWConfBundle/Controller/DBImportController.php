@@ -131,7 +131,7 @@ class DBImportController extends Controller
             $entity= new CalendarEntityRelation();
             foreach ($current as $setter => $value) {
                 if($setter=="setCalendarEntity" || $setter=="setRelatedTo"){
-                    $value=$eventEntities[$value]; 
+                    if($eventEntities[$value])$value=$eventEntities[$value]; 
                 }
                 //echo "Relation->".$setter."(".$value.");\n";
                 call_user_func_array(array($entity, $setter), array($value)); 
