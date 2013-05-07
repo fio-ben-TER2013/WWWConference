@@ -25,13 +25,11 @@
  function run(dbimportpath){ 
     $('#myModal').modal(); 
     $('#DBURLBtn').off('click').click({dbimportpath:dbimportpath},function(event){
-        /*
+        
         if( $('#DBURL').val()=="")return;
         var completeConfRdfURL =  $('#DBURL').val(); 
         
-        var completeConfRdf=getRdfFromUrl(completeConfRdfURL) ;  
-        */
-        var completeConfRdf=getRdfFromUrl('../../../complete4.rdf');
+        var completeConfRdf=getRdfFromUrl(completeConfRdfURL) ;   
         
         // run www2012 conf sample with ../../../complete4.rdf 
         
