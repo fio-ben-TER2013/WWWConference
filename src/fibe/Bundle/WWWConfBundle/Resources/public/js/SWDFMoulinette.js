@@ -25,11 +25,16 @@
  function run(dbimportpath){ 
     $('#myModal').modal(); 
     $('#DBURLBtn').off('click').click({dbimportpath:dbimportpath},function(event){
-    
+        /*
         if( $('#DBURL').val()=="")return;
         var completeConfRdfURL =  $('#DBURL').val(); 
         
         var completeConfRdf=getRdfFromUrl(completeConfRdfURL) ;  
+        */
+        var completeConfRdf=getRdfFromUrl('../../../complete4.rdf');
+        
+        // run www2012 conf sample with ../../../complete4.rdf 
+        
         if(completeConfRdf==undefined){alert('wrong URL');return;}
         if(!confirm("Are you sure you want to import "+$('#DBURL').val()+" file ? "))return;
         
@@ -40,8 +45,7 @@
         var categories= [];
         
         //call stack for parent inheritance 
-        var defaultDate='1980-01-01T00:00:00+00:00'
-        
+        var defaultDate='1980-01-01T00:00:00+00:00' 
         //////////////////////////////////////////////////////////////////////////
         ///////////////////////  first round for locations  //////////////////////
         //////////////////////////////////////////////////////////////////////////
@@ -82,18 +86,18 @@
         //////////////////////////////////////////////////////////////////////////
         
         $(completeConfRdf).children().children().each(function(index){
-        
+        /*
         /////////////////////         ROOT NODE         //////////////////
             if(this.nodeName=="swc:ConferenceEvent"){  
                 doEvent(this);
+                addRelation(this);
                 //console.log(events[events.length-1]);
                 //console.log(xproperties[xproperties.length-1]); 
-            }else if(this.nodeName.indexOf("swc:") !== -1 && this.nodeName.indexOf("Event")!== -1) { 
+            }else */if( this.nodeName.indexOf("Event")!== -1) { 
         /////////////////////         EVENT NODE         //////////////////
               
-              doEvent(this);
-              
-              addRelation(this,events.length-1);
+              doEvent(this); 
+              addRelation(this);
                 
               //console.log(events);
               //console.log(relations);
@@ -213,7 +217,9 @@
             });  
             
               // EVENT CAT
-            var catName = event.nodeName.split("swc:").join("").split("Event").join("");
+            var catName = event.nodeName.split("swc:").join("").split("event:").join("");
+            var tmp=catName;
+            if(tmp.split("Event").join("")!="")catName=tmp;
             var catId = getCategoryIdFromName(catName);
             if(catId==undefined){ 
               var category= {}; 
@@ -236,25 +242,27 @@
          }
          
         //EVENT ADD BOTH PARENT AND CHILD RELATION BETWEEN 2 EVENTS
-        function addRelation(event,currentEventId){
+        function addRelation(event){
+            var currentEventId = events.length-1;
             $(event).children().each(function(){
-                if(this.nodeName=="swc:isSubEventOf"||this.nodeName=="swc:isSuperEventOf"){ 
-                    var relatedToEventId=getEventIdFromXProp($(this).attr('rdf:resource'));
+                if(this.nodeName=="swc:isSubEventOf"||this.nodeName=="swc:isSuperEventOf"){//
+                    var relatedToEventId=getEventIdFromURI($(this).attr('rdf:resource'));
                     if(relatedToEventId!=undefined && events[relatedToEventId]!=undefined ){
-                        var relationType = this.nodeName=="swc:isSubEventOf"?"PARENT":"CHILD";
+                        var relationType = this.nodeName.indexOf("swc:isSubEventOf")!== -1?"PARENT":"CHILD";
                         var relation= {}; 
-                        relation['setCalendarEntity']=relatedToEventId; 
+                        relation['setCalendarEntity']=parseInt(relatedToEventId); 
                         relation['setRelationType']=relationType;
-                        relation['setRelatedTo']=currentEventId;
+                        relation['setRelatedTo']=parseInt(currentEventId);
                         relations.push(relation);
                         var relationType = this.nodeName=="swc:isSubEventOf"?"CHILD":"PARENT";
                         var relation= {};
-                        relation['setCalendarEntity']=currentEventId;
+                        relation['setCalendarEntity']=parseInt(currentEventId);
                         relation['setRelationType']=relationType;
-                        relation['setRelatedTo']=relatedToEventId;
+                        relation['setRelatedTo']=parseInt(relatedToEventId);
                         relations.push(relation); 
                         return true;
                     }else{
+                      //alert( event['setSummary']+", "+$(this).attr('rdf:resource'));
                       //console.log("Unknown parent");
                       
                     }
@@ -288,12 +296,12 @@
         }
         
         // GET THE INDEX OF AN EVENT GIVEN ITS URI
-        function getEventIdFromXProp(uri){ 
+        function getEventIdFromURI(uri){ 
         
             for (var i=0;i<xproperties.length;i++){
                 //alert(url+"\n"+xproperties[i]['setXValue']+"\n"+(xproperties[i]['setXValue']==url)+"\n"+i);
                 if(xproperties[i]['setXValue']==uri){
-                    return xproperties[i]['setCalendarEntity']; 
+                    return xproperties[i]['setCalendarEntity'];
                 }
             }
             return undefined;
@@ -302,7 +310,7 @@
         // GET THE INDEX OF AN EVENT GIVEN ITS CHILD INDEX
         function getParentIndex(eventIndex){ 
             for(var i=0;i<relations.length;i++){  
-                 if(relations[i]['setRelatedTo']==eventIndex && relations[i]['setRelationType']=="PARENT"){ 
+                 if(relations[i]['setRelatedTo'] == eventIndex  && relations[i]['setRelationType'].indexOf("PARENT") ){ 
                     return relations[i]['setCalendarEntity'];
                  }
             } 

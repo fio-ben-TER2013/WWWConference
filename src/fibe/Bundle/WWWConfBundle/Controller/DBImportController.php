@@ -39,13 +39,11 @@ class DBImportController extends Controller
             $entity= new Location();
             $current = $locations[$i];  
             foreach ($current as $setter => $value) { 
-                //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             } 
             $em->persist($entity); 
             array_push($locationEntities,$entity); 
-        } 
-        $em->flush();  
+        }  
         
         
         //////////////////////  categories  ////////////////////// 
@@ -61,15 +59,14 @@ class DBImportController extends Controller
             }
             $entity= new Category();
             foreach ($current as $setter => $value) {
-                //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
+                if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
             
             $em->persist($entity); 
             array_push($categoryEntities,$entity); 
         }  
-          
-        $em->flush(); 
+            
         
         //////////////////////  events  //////////////////////
         $entities = $JSONFile['events'];
@@ -78,8 +75,10 @@ class DBImportController extends Controller
             $current = $entities[$i];
             foreach ($current as $setter => $value) {
                 if($setter=="setStartAt" || $setter=="setEndAt"){
-                    $date= explode(' ', $value);
+                    $date= explode(' ', $value); 
                     $value=new \DateTime($date[0], new \DateTimeZone(date_default_timezone_get()));
+                    //echo $setter." : ".$value->format(DATE_ATOM)."\n"; 
+                    
                 }
                 
                 if($setter=="setLocation"){
@@ -92,15 +91,15 @@ class DBImportController extends Controller
                 
                     //echo "XProperty->->".$eventEntities[strval($value)]."->".$value.");\n";
                     $value=$categoryEntities[$value];  
-                } 
-                    //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
+                }
+                
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
+            
             $em->persist($entity); 
             array_push($eventEntities,$entity); 
         }
-          
-        $em->flush(); 
+        //echo implode(",\t",$eventEntities)  ;
         //////////////////////  x prop  //////////////////////
         //echo "xproperties->\n";
         $xproperties = $JSONFile['xproperties']; 
@@ -120,8 +119,7 @@ class DBImportController extends Controller
             $em->persist($entity);
         }
          
-        
-        $em->flush(); 
+         
         
         //////////////////////  relations  //////////////////////
         //echo "relations->\n";
