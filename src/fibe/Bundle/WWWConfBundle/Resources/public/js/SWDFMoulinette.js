@@ -41,9 +41,10 @@
         var xproperties= [];
         var relations= [];
         var categories= [];
+        var proceedings= [];
         
         //call stack for parent inheritance 
-        var defaultDate='1980-01-01T00:00:00+00:00' 
+        var defaultDate='1980-01-01T00:00:00+00:00'
         //////////////////////////////////////////////////////////////////////////
         ///////////////////////  first round for locations  //////////////////////
         //////////////////////////////////////////////////////////////////////////
@@ -80,31 +81,40 @@
         
         
         //////////////////////////////////////////////////////////////////////////
-        ///////////////////  second round for events  ////////////////////////////
+        ///////////////////  Event  ////////////////////////////
         //////////////////////////////////////////////////////////////////////////
         
         $(completeConfRdf).children().children().each(function(index){
-        /*
-        /////////////////////         ROOT NODE         //////////////////
-            if(this.nodeName=="swc:ConferenceEvent"){  
-                doEvent(this);
-                addRelation(this);
-                //console.log(events[events.length-1]);
-                //console.log(xproperties[xproperties.length-1]); 
-            }else */if( this.nodeName.indexOf("Event")!== -1) { 
-        /////////////////////         EVENT NODE         //////////////////
-              
+            if( this.nodeName.indexOf("Event")!== -1 ) { 
+            /////////////////////         EVENT NODE         //////////////////
+                   
               doEvent(this); 
-              addRelation(this);
-                
+              
+              //addRelation(this);
               //console.log(events);
               //console.log(relations);
-            } 
+            }
         });
         
         
         //////////////////////////////////////////////////////////////////////////
-        ///////////////////  third round for publication title  //////////////////
+        //////////////////////////////  relations  ///////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+        
+        var j=0;
+        $(completeConfRdf).children().children().each(function(index){ 
+            if( this.nodeName.indexOf("Event")!== -1 ) { 
+         
+              addRelation(this,j);
+              j++; 
+              //console.log(events);
+              //console.log(relations);
+            }  
+        });
+        
+        
+        //////////////////////////////////////////////////////////////////////////
+        ///////////////////  fourth round for publication title  //////////////////
         //////////////////////////////////////////////////////////////////////////
         
         $(completeConfRdf).children().children().each(function(index){
@@ -126,8 +136,7 @@
                     }
                 }
             }
-        });
-        
+        }); 
          
         //////////////////////////////////////////////////////////////////////////
         ////////////////////////  INHERIT PARENT DATE  ///////////////////////////
@@ -239,25 +248,40 @@
              
          }
          
-        //EVENT ADD BOTH PARENT AND CHILD RELATION BETWEEN 2 EVENTS
-        function addRelation(event){
-            var currentEventId = events.length-1;
+        //ADD BOTH PARENT AND CHILD RELATION BETWEEN 2 EVENTS
+        function addRelation(event,currentEventId){ 
             $(event).children().each(function(){
-                if(this.nodeName=="swc:isSubEventOf"||this.nodeName=="swc:isSuperEventOf"){//
+                if(this.nodeName=="swc:isSubEventOf"||this.nodeName=="swc:isSuperEventOf"){ 
                     var relatedToEventId=getEventIdFromURI($(this).attr('rdf:resource'));
                     if(relatedToEventId!=undefined && events[relatedToEventId]!=undefined ){
-                        var relationType = this.nodeName.indexOf("swc:isSubEventOf")!== -1?"PARENT":"CHILD";
-                        var relation= {}; 
-                        relation['setCalendarEntity']=parseInt(relatedToEventId); 
-                        relation['setRelationType']=relationType;
-                        relation['setRelatedTo']=parseInt(currentEventId);
-                        relations.push(relation);
-                        var relationType = this.nodeName=="swc:isSubEventOf"?"CHILD":"PARENT";
-                        var relation= {};
-                        relation['setCalendarEntity']=parseInt(currentEventId);
-                        relation['setRelationType']=relationType;
-                        relation['setRelatedTo']=parseInt(relatedToEventId);
-                        relations.push(relation); 
+                    
+                        var relationId = getRelationIdFromCalendarEntityId(currentEventId,relatedToEventId); 
+                        //console.log("---------------------");
+                        //console.log(currentEventId);
+                        //console.log(events[currentEventId]['setSummary']);
+                        //console.log(this.nodeName);
+                        //console.log(relatedToEventId);
+                        //console.log(events[relatedToEventId]['setSummary']);
+                        //console.log(relations[relationId]);
+                        
+                        if(!relations[relationId]){
+                          var relationType = this.nodeName.indexOf("swc:isSubEventOf")!== -1?"PARENT":"CHILD";
+                          var relation= {}; 
+                          relation['setCalendarEntity']=parseInt(relatedToEventId); 
+                          relation['setRelationType']=relationType;
+                          relation['setRelatedTo']=parseInt(currentEventId);
+                          //console.log("----------   PUSHED    -----------");
+                          //console.log(relation);
+                          relations.push(relation);
+                          
+                          var relationType = (relationType=="PARENT"?"CHILD":"PARENT");
+                          var relation= {};
+                          relation['setCalendarEntity']=parseInt(currentEventId);
+                          relation['setRelationType']=relationType;
+                          relation['setRelatedTo']=parseInt(relatedToEventId);
+                          //console.log(relation);
+                          relations.push(relation); 
+                        }
                         return true;
                     }else{
                       //alert( event['setSummary']+", "+$(this).attr('rdf:resource'));
@@ -315,14 +339,60 @@
             return undefined;
         }
         
-        // GET RECURSIVELY PARENT DATETIME
+        // GET THE INDEX OF AN EVENT GIVEN ITS PARENT INDEX
+        function getChildIndex(eventIndex){ 
+            for(var i=0;i<relations.length;i++){  
+                 if(relations[i]['setRelatedTo'] == eventIndex  && relations[i]['setRelationType'].indexOf("CHILD") ){ 
+                    return relations[i]['setCalendarEntity'];
+                 }
+            } 
+            return undefined;
+        }
+         
+        
+        
+        function getRelationIdFromCalendarEntityId(eventId,relatedToEventId){
+            for(var i=0;i<relations.length;i++){  
+                 
+                 if(relations[i]['setCalendarEntity'] === eventId && relations[i]['setRelatedTo'] === relatedToEventId){  
+                    return i;
+                 }
+            } 
+            return undefined;
+            
+        }
+        
+        function getTrackEventFromInProceedingsUri(ProceedingsUri){
+            
+            for(var trackEvent in proceedings){  
+                 
+                for(var j=0;j<proceedings[trackEvent].length;j++){  
+                     
+                     if(proceedings[trackEvent][j] === ProceedingsUri){  
+                        return trackEvent;
+                     }
+                } 
+            } 
+            return undefined;
+            
+        }
+        
+        
+        // GET RECURSIVELY PARENT PROP
         
         function getParentProp(eventIndex,parentProp){ 
             ctn++;
-            if(ctn>maxCllStck)return defaultDate;
+            if(ctn>maxCllStck)
+                return defaultDate;
+            
             var parentIndex=getParentIndex(eventIndex); 
-            if( parentIndex==undefined || events[parentIndex]==undefined)return defaultDate;
-            if( events[parentIndex][parentProp]!=undefined)return events[parentIndex][parentProp];
+            
+            if( !parentIndex || !events[parentIndex])
+                return defaultDate;
+                
+            if( events[parentIndex][parentProp])
+                return events[parentIndex][parentProp];
+                
             return getParentProp(getParentIndex(eventIndex),parentProp);
         }
         
