@@ -22,13 +22,13 @@ class ScheduleController extends Controller
 
 /**
  *  @Route("/", name="wwwconf_schedule")
- * @Template()
+ *  @Template()
  */
     public function scheduleAction()
     {
 		 
-		$em = $this->getDoctrine()->getManager();
-        $entities = $em->getRepository('IDCISimpleScheduleBundle:Event')->findAll(); 
+		  $em = $this->getDoctrine()->getManager();
+      $entities = $em->getRepository('IDCISimpleScheduleBundle:Event')->findAll();
       return  array(
         'events' => $entities,
       );

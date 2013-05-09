@@ -4,8 +4,13 @@
 
    var $calendar = $('#calendar');
    var id = 10;
+   
    var EventsArray=arrayEvents;
-    
+   
+   //set default view to the start
+   function afterInit(){ 
+      $calendar.weekCalendar("gotoWeek",EventsArray[0].start)
+   };
    
    $calendar.weekCalendar({
       timeslotsPerHour : 4,
@@ -138,12 +143,15 @@
          callback(getEventData());
       }
    });
+   afterInit();
 
    function resetForm($dialogContent) {
       $dialogContent.find("input").val("");
       $dialogContent.find("textarea").val("");
    }
 
+
+// load events from db
    function getEventData() {
    return EventsArray;
    }
@@ -204,23 +212,6 @@
    });
 
 
-   var $about = $("#about");
-
-   $("#about_button").click(function() {
-      $about.dialog({
-         title: "About this calendar demo",
-         width: 600,
-         close: function() {
-            $about.dialog("destroy");
-            $about.hide();
-         },
-         buttons: {
-            close : function() {
-               $about.dialog("close");
-            }
-         }
-      }).show();
-   });
 
 
 }
