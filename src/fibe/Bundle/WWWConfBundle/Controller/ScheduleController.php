@@ -24,7 +24,7 @@ class ScheduleController extends Controller
  *  @Route("/", name="wwwconf_schedule")
  * @Template()
  */
-    public function ScheduleAction()
+    public function scheduleAction()
     {
 		 
 		$em = $this->getDoctrine()->getManager();
