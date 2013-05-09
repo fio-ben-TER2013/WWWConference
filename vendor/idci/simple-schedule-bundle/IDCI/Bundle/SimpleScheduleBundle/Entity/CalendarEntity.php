@@ -389,9 +389,10 @@ class CalendarEntity
      */
     public function __toString()
     {
-        return sprintf("%d] start at %s",
+        return sprintf("%d] start at %s : %s",
             $this->getId(),
-            $this->getStartAt()->format('Y-m-d')
+            $this->getStartAt()->format('Y-m-d'),
+            $this->getSummary()
         );
     }
 

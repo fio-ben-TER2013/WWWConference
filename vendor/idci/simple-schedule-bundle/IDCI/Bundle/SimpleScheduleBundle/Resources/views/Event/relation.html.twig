@@ -9,15 +9,13 @@
     </thead>
 
     <tbody>
-        {% for relation,entities in entity.getRelateds() %}
-            {% for entity in entities %}
-            <tr>
-                <td>{{ entity.id }}</td>
-                <th>{{ relation }}</th>
-                <td>{{ entity.startAt | date('Y-m-d') }}</td>
-                <td>{{ entity.summary }}</td>
-            </tr>
-            {% endfor %}
+        {% for relation in entity.getRelateds() %} 
+            <tr> 
+                <td>{{ relation.id }}</td>
+                <th>{{ relation.relationType }}</th>
+                <td>{{ relation.relatedTo.startAt | date('Y-m-d') }}</td>
+                <td>{{ relation.relatedTo.summary }}</td>
+            </tr> 
         {% endfor %}
     </tbody>
 

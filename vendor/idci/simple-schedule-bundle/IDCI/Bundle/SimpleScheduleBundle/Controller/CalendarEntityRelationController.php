@@ -46,13 +46,37 @@ class CalendarEntityRelationController extends Controller
 
         if ($form->isValid()) {
             $em->persist($entity);
+  
+            //add reverse relation ( for parent and child relationType only ) 
+            if($entity->getRelationType()=="PARENT"){
+              
+              $reverse = new CalendarEntityRelation();
+              $reverse->setRelationType("CHILD");
+              $reverse->setCalendarEntity($entity->getRelatedTo());
+              $reverse->setRelatedTo($entity->getCalendarEntity());
+              $em->persist($reverse);
+              
+            }else if($entity->getRelationType()=="CHILD"){
+              
+              $reverse = new CalendarEntityRelation();
+              $reverse->setRelationType("PARENT");
+              $reverse->setCalendarEntity($entity->getRelatedTo());
+              $reverse->setRelatedTo($entity->getCalendarEntity());
+              $em->persist($reverse);
+            
+            }
+            
+            $form = $this->createForm(new CalendarEntityRelationType, $entity);
+            $form->bind($request);
+        
+        
             $em->flush();
         } else {
             die('todo: flash message');
         }
 
         return $this->redirect($this->generateUrl(
-            'admin_event_edit',
+            'admin_schedule_event_edit',
             array('id' => $calendarEntity->getId())
         ));
     }
