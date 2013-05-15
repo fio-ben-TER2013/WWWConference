@@ -10,3 +10,13 @@ idci_simple_schedule:
 idci_exporter:
     resource: "../../vendor/idci/exporter-bundle/IDCI/Bundle/ExporterBundle/Controller"
     type:     annotation
+
+login:
+    pattern:   /login
+    defaults:  { _controller: fibeSecurityBundle:Security:login }
+    
+login_check:
+    pattern:   /login_check
+ 
+logout:
+    pattern:   /logout

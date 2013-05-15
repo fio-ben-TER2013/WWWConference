@@ -23,6 +23,7 @@ class AppKernel extends Kernel
             new IDCI\Bundle\ExporterBundle\IDCIExporterBundle(),
             new IDCI\Bundle\SimpleScheduleBundle\IDCISimpleScheduleBundle(),
             new fibe\Bundle\WWWConfBundle\fibeWWWConfBundle(),
+            new fibe\SecurityBundle\fibeSecurityBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
