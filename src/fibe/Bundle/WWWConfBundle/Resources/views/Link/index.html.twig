@@ -6,17 +6,17 @@
 {{ parent() }}
 
 <div class="hero-unit">
-        <h1>Paper event linker</h1>
-        <p>This app has been made to link easily a paper with its related event for the WWWConference at Lyon.</p>
+        <h1>SWC event linker</h1>
+        <p>This app has been made to link easily manage a conference using SWC ontology.</p>
         <div class="row-fluid">
-            <div class="span4">
+			      <div class="span4">
+                <p><a href="{{ path('wwwconf_schedule') }}" class="btn btn-primary btn-large">Manage schedule <i class="icon-calendar icon-white"></i></a></p>
+            </div>
+            <div class="span3">
                 <p><a href="{{ path('wwwconf_link_create') }}" class="btn btn-primary btn-large btn-success">New link <i class="icon-plus icon-white"></i></a></p>
             </div>
-            <div class="span5">
-                <p><a href="{{ path('wwwconf_link_list') }}" class="btn btn-primary btn-large">See links »</a></p>
-            </div>
-			 <div class="span6">
-                <p><a href="{{ path('wwwconf_schedule') }}" class="btn btn-primary btn-large">Schedule</a></p>
+            <div class="span3">
+                <p><a href="{{ path('wwwconf_link_list') }}" class="btn btn-info btn-large">See links »</a></p>
             </div>
         </div>
       </div>
