@@ -47,6 +47,7 @@ class DBImportController extends Controller
         
         
         //////////////////////  categories  ////////////////////// 
+        $colorArray = array('lime', 'red', 'blue', 'orange', 'gold', 'coral', 'crimson', 'aquamarine', 'darkOrchid', 'forestGreen', 'peru','purple' ,'seaGreen'  );
         $entities = $JSONFile['categories']; 
         for($i=0;$i<count($entities);$i++){
             $current = $entities[$i]; 
@@ -62,7 +63,7 @@ class DBImportController extends Controller
                 if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
-            
+            $entity->setColor($colorArray[$i]);
             $em->persist($entity); 
             array_push($categoryEntities,$entity); 
         }  

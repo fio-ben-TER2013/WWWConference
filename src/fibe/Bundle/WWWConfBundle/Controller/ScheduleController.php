@@ -44,7 +44,7 @@ class ScheduleController extends Controller
 	    $methodParam = $getData->get('method', ''); 
 	    $postData = $request->request->all();
 	    
-      $JSONArray ;
+      $JSONArray = array();
 	    
 	    if( $methodParam=="list"){
 	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) ); 
@@ -54,7 +54,8 @@ class ScheduleController extends Controller
           $JSONArray['end'] = $week_end;
           $JSONArray['error'] = null;
           $JSONArray['issort'] = true;
-           
+          
+          
           $eventsEntities =  $em->getRepository('IDCISimpleScheduleBundle:Event')
                         ->createQueryBuilder('e')
                         ->where('e.startAt > :weekStart')
@@ -71,19 +72,21 @@ class ScheduleController extends Controller
           $start =  $eventsEntities[$i]->getStartAt() ; 
           $end =  $eventsEntities[$i]->getEndAt() ; 
           $duration =  $end->diff($start) ; 
-          
+          $category = $eventsEntities[$i]->getCategories();
+          $category = $category[0]; 
+          //echo $category->getColor(); 
           $JSONArray['events'][] = array(
             $eventsEntities[$i]->getId(),
             $eventsEntities[$i]->getSummary(),
-            $eventsEntities[$i]->getStartAt()->format('m/d/Y H:i'),
-            $duration->format('%m/%d/%Y %H:%i'),
-            rand(0,1), // ??
-            0, //all day event
-            0,//Recurring event
-            rand(-1,13), // ??
-            1, //editable
-            $eventsEntities[$i]->getLocation(), //location
-            ''//$attends
+            $start->format('m/d/Y H:i'),
+            $end->format('m/d/Y H:i'),
+            0,                                  // disable alarm clock icon
+            0,                                  // all day event
+            0,                                  // Recurring event
+            $category->getId(),                 // color
+            1,                                  // editable
+            ($eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null), // location
+            null                                // $attends
           );
           
         } 
