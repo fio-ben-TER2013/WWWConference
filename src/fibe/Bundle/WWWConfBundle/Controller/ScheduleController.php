@@ -65,20 +65,28 @@ class ScheduleController extends Controller
                         )) 
                         ->getQuery()
                         ->getResult();
-        $events = array(); 
+        $JSONArray['events'] = array();
         for ($i = 0; $i < count($eventsEntities); $i++) {
-          echo "Cle : $i; Valeur : $eventsEntities[$i]";
-          $event;
-          $event[0] = $eventsEntities[$i]->getId();
-          $event[1] = $eventsEntities[$i]->getSummary();
-          $event[2] = $eventsEntities[$i]->getStartAt()->format('m/d/Y H:i');
-          $date1 =  $eventsEntities[$i]->getStartAt() ;
-          $date2 =  $eventsEntities[$i]->getEndAt() ; 
-          $diff =  $date1->diff($date2) ; 
-          $event[3] = $diff->format('%m/%d/%Y %H:%i');
-          array_push($events, $event); 
-        }
-       $JSONArray['events'] = $events;
+          
+          $start =  $eventsEntities[$i]->getStartAt() ; 
+          $end =  $eventsEntities[$i]->getEndAt() ; 
+          $duration =  $end->diff($start) ; 
+          
+          $JSONArray['events'][] = array(
+            $eventsEntities[$i]->getId(),
+            $eventsEntities[$i]->getSummary(),
+            $eventsEntities[$i]->getStartAt()->format('m/d/Y H:i'),
+            $duration->format('%m/%d/%Y %H:%i'),
+            rand(0,1), // ??
+            0, //all day event
+            0,//Recurring event
+            rand(-1,13), // ??
+            1, //editable
+            $eventsEntities[$i]->getLocation(), //location
+            ''//$attends
+          );
+          
+        } 
         
 	    }else if( $methodParam=="add"){
 	      
