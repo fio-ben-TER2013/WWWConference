@@ -5,12 +5,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 //On insere l'entity Event  de simple schedule
-use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType; 
+
+use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
+use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty;
+use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
 use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
-use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty; 
-use IDCI\Bundle\SimpleScheduleBundle\Entity\Event; 
+use IDCI\Bundle\SimpleScheduleBundle\Form\RecurChoiceType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType;
+use IDCI\Bundle\SimpleScheduleBundle\Form\CalendarEntityRelationType;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+
+
+
+
 //use fibe\Bundle\WWWConfBundle\Form\EventType; 
 //On insere le controlleur de Event 
 //use SimpleScheduleBundle\Controller
@@ -33,6 +43,7 @@ class ScheduleController extends Controller
     
 
 /**
+ *   return all events contained in the given date week
  * @Route("/getEvents", name="wwwconf_getevents")
  */
     public function getEventsAction(Request $request)
@@ -74,7 +85,8 @@ class ScheduleController extends Controller
           $duration =  $end->diff($start) ; 
           $category = $eventsEntities[$i]->getCategories();
           $category = $category[0]; 
-          //echo $category->getColor(); 
+          
+          //TODO : all day event
           $JSONArray['events'][] = array(
             $eventsEntities[$i]->getId(),
             $eventsEntities[$i]->getSummary(),
@@ -83,18 +95,46 @@ class ScheduleController extends Controller
             0,                                  // disable alarm clock icon
             0,                                  // all day event
             0,                                  // Recurring event
-            $category->getId(),                 // color
+            $category?$category->getId():null,                 // color
             1,                                  // editable
-            ($eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null), // location
+            $eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null, // location if exists
             null                                // $attends
           );
           
-        } 
+        }
         
 	    }else if( $methodParam=="add"){
-	      
+        
+          $event= new Event();
+          
+          $event->setStartAt(new \DateTime($postData['start'], new \DateTimeZone(date_default_timezone_get())));
+          $event->setEndAt(new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get())));
+          $event->setSummary($postData['title']);
+          $em->persist($event);
+          $em->flush();  
+          
+          $JSONArray['Data'] = $event->getId();
+          $JSONArray['IsSuccess'] = true;
+          $JSONArray['Msg'] = "add success";
+          
+          
 	    }else if( $methodParam=="update"){
-	       
+	        /*
+	          $postData['calendarId']
+	          $postData['CalendarStartTime']
+	          $postData['CalendarEndTime']
+	          $postData['timezone']
+	        */
+	        
+          $event = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($postData['calendarId']);
+          $startAt = new \DateTime($postData['CalendarStartTime'], new \DateTimeZone(date_default_timezone_get()));
+          $endAt =new \DateTime($postData['CalendarEndTime'], new \DateTimeZone(date_default_timezone_get())) ;
+          $event->setStartAt( $startAt );
+          $event->setEndAt( $endAt );
+          $em->persist($event);
+          $em->flush();  
+          $JSONArray['IsSuccess'] = true;
+          $JSONArray['Msg'] = "Succefully";
 	    }else if( $methodParam=="remove"){
 	      
 	    }
@@ -104,7 +144,85 @@ class ScheduleController extends Controller
       return $response;
     }
     
+
+    /**
+     * @Route("/editEvents", name="wwwconf_editEvent")
+     * @Template()
+     */
+     
+    public function scheduleEditAction(Request $request)
+    {
+	    $getData = $request->query;
+        $id = $getData->get('id', ''); 
+        
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Event entity.');
+        }
+
+        $form = $this->createForm(new EventType(), $entity);
+        $deleteForm =  $this->createFormBuilder(array('id' => $id))
+                            ->add('id', 'hidden')
+                            ->getForm()
+                        ;
+
+        $xproperty = new XProperty();
+        $xproperty->setCalendarEntity($entity);
+        $xpropertyForm = $this->createForm(new XPropertyType(), $xproperty);
+
+        $relation = new CalendarEntityRelation();
+        $relation->setCalendarEntity($entity);
+        $relationForm = $this->createForm(new CalendarEntityRelationType($entity), $relation);
+
+        return array(
+            'entity'            => $entity,
+            'formEvent'         => $form->createView(),
+            'delete_form'       => $deleteForm->createView(),
+            'xproperty_form'    => $xpropertyForm->createView(),
+            'relation_form'     => $relationForm->createView()
+        );
+      
+    }
     
+     
+    /**
+     * @Route("/{id}/updateEvents", name="wwwconf_updateEvent") 
+     */
+     
+    public function scheduleUpdateAction(Request $request,$id)
+    {
+    
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Event entity.');
+        }
+ 
+        $editForm = $this->createForm(new EventType(), $entity);
+        $editForm->bind($request);
+        echo $editForm->isValid()?"ok":"bad";
+        if ($editForm->isValid()) {
+            echo $entity;
+            $em->persist($entity);
+            $em->flush();
+
+            $this->get('session')->getFlashBag()->add(
+                'info',
+                $this->get('translator')->trans('%entity%[%id%] has been updated', array(
+                    '%entity%' => 'Event',
+                    '%id%'     => $entity->getId()
+                ))
+            ); 
+            return new Response(json_encode(array("ok")));
+        }
+
+      
+    }
+    
+     
 }
 
 

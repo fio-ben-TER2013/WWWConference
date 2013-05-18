@@ -1483,7 +1483,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
             }
             return null;
 
-        }
+        }/*
         function quickd(type) {
             $("#bbit-cs-buddle").css("visibility", "hidden");
             var calid = $("#bbit-cs-id").val();
@@ -1525,12 +1525,16 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 ishide = true;
             }
             return { left: tleft, top: ttop, hide: ishide };
-        }
+        }*/
         function dayshow(e, data) {
             if (data == undefined) {
                 data = getdata($(this));
             }
-            if (data != null) {
+            if (data != null) { 
+              console.log(e); 
+              console.log(data); 
+              option.EditCmdhandler( data);
+            /*
                 if (option.quickDeleteUrl != "" && data[8] == 1 && option.readonly != true) {
                     var csbuddle = '<div id="bbit-cs-buddle" style="z-index: 180; width: 400px;visibility:hidden;" class="bubble"><table class="bubble-table" cellSpacing="0" cellPadding="0"><tbody><tr><td class="bubble-cell-side"><div id="tl1" class="bubble-corner"><div class="bubble-sprite bubble-tl"></div></div><td class="bubble-cell-main"><div class="bubble-top"></div><td class="bubble-cell-side"><div id="tr1" class="bubble-corner"><div class="bubble-sprite bubble-tr"></div></div>  <tr><td class="bubble-mid" colSpan="3"><div style="overflow: hidden" id="bubbleContent1"><div><div></div><div class="cb-root"><table class="cb-table" cellSpacing="0" cellPadding="0"><tbody><tr><td class="cb-value"><div class="textbox-fill-wrapper"><div class="textbox-fill-mid"><div id="bbit-cs-what" title="'
                     	+ i18n.xgcalendar.click_to_detail + '" class="textbox-fill-div lk" style="cursor:pointer;"></div></div></div></td></tr><tr><td class=cb-value><div id="bbit-cs-buddle-timeshow"></div></td></tr></tbody></table><div class="bbit-cs-split"><input id="bbit-cs-id" type="hidden" value=""/>[ <span id="bbit-cs-delete" class="lk">'
@@ -1544,6 +1548,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                         var closebtn = $("#bubbleClose2").click(function() {
                             $("#bbit-cs-buddle").css("visibility", "hidden");
                         });
+                        
                         calbutton.click(function() {
                             var data = $("#bbit-cs-buddle").data("cdata");
                             if (option.DeleteCmdhandler && $.isFunction(option.DeleteCmdhandler)) {
@@ -1632,7 +1637,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                             option.ViewCmdhandler.call(this, data);
                         }
                     }
-                }
+                }*/
             }
             else {
                 alert(i18n.xgcalendar.data_format_error);
@@ -1751,6 +1756,59 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
             if ((!option.quickAddHandler && option.quickAddUrl == "") || option.readonly) {
                 return;
             }
+            what = prompt("Please enter an event name","New event");
+            if(!what) return;
+            
+            var zone = new Date().getTimezoneOffset() / 60 * -1; 
+            start.setHours(start.getHours()+zone);
+            end.setHours(end.getHours()+zone);
+            
+            var param = { "title" : what,
+                          "start" : start.toISOString(),
+                          "end" : end.toISOString(),
+                          "isallday" : isallday,
+                        }
+						console.log(param);
+            var newdata = [];
+
+            var tId = -1;
+            option.onBeforeRequestData && option.onBeforeRequestData(2);
+            $.post(option.quickAddUrl, param, function(data) {
+                if (data) {
+                    if (data.IsSuccess == true) {
+                        option.isloading = false;
+                        option.eventItems[tId][0] = data.Data;
+                        option.eventItems[tId][8] = 1;
+                        render();
+
+                        option.onAfterRequestData && option.onAfterRequestData(2);
+                    }
+                    else {
+                        option.onRequestDataError && option.onRequestDataError(2, data);
+                        option.isloading = false;
+                        option.onAfterRequestData && option.onAfterRequestData(2);
+                    }
+
+                }
+
+
+            }, "json");
+
+            start.setHours(start.getHours()-zone);
+            end.setHours(end.getHours()-zone);
+            
+            newdata.push(-1, what); 
+ 
+            var diff = DateDiff("d", start, end);
+            newdata.push(start, end, isallday == "1" ? 1 : 0, diff > 0 ? 1 : 0, 0);
+            newdata.push(-1, 0, "", ""); 
+            tId = Ind(newdata);
+
+            realsedragevent();
+            render();
+ 
+            
+            /*
             var buddle = $("#bbit-cal-buddle");
             if (buddle.length == 0) {
                 var temparr = [];
@@ -1877,6 +1935,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 $("#bbit-cal-buddle").css("visibility", "hidden");
                 realsedragevent();
             });
+             */
             return false;
         }
         //format datestring to Date Type

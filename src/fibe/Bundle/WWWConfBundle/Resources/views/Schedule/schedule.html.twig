@@ -105,7 +105,7 @@
     
     
     <script type="text/javascript">
-        $(document).ready(function() {     
+        $(document).ready(function() {
            var view="week";          
            
             var DATA_FEED_URL = "{{ path('wwwconf_getevents') }}";
@@ -185,7 +185,7 @@
             }
             function Edit(data)
             {
-               var eurl="edit.php?id={0}&start={2}&end={3}&isallday={4}&title={1}";   
+               var eurl="{{ path('wwwconf_editEvent') }}?id={0}";   
                 if(data)
                 {
                     var url = StrFormat(eurl,data);
@@ -263,8 +263,11 @@
             
             //Add a new event
             $("#faddbtn").click(function(e) {
+                alert("TODO add event");
+                /*
                 var url ="edit.php";
                 OpenModelWindow(url,{ width: 500, height: 400, caption: "Create New Calendar"});
+                */
             });
             //go to today
             $("#showtodaybtn").click(function(e) {

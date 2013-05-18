@@ -30,8 +30,7 @@ abstract class CalendarEntityType extends AbstractType
         $builder
             ->add('summary')
             ->add('categories')
-            ->add('startAt', 'datetime', array(
-                'data'    => new \DateTime('now'),
+            ->add('startAt', 'datetime', array( 
                 'years'   => range(date('Y')-1, date('Y')+5),
                 'minutes' => range(0, 59, 5)
             ))

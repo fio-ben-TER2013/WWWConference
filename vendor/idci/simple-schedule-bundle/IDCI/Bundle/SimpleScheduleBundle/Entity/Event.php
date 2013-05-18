@@ -63,7 +63,6 @@ class Event extends LocationAwareCalendarEntity
     {
         
         if($this->getEndAt()) {
-            
         }else if(!$this->getDuration()) {
             $this->setEndAt(null);
         } else {
