@@ -118,13 +118,7 @@ class ScheduleController extends Controller
           $JSONArray['Msg'] = "add success";
           
           
-	    }else if( $methodParam=="update"){
-	        /*
-	          $postData['calendarId']
-	          $postData['CalendarStartTime']
-	          $postData['CalendarEndTime']
-	          $postData['timezone']
-	        */
+	    }else if( $methodParam=="update"){ 
 	        
           $event = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($postData['calendarId']);
           $startAt = new \DateTime($postData['CalendarStartTime'], new \DateTimeZone(date_default_timezone_get()));
@@ -135,8 +129,6 @@ class ScheduleController extends Controller
           $em->flush();  
           $JSONArray['IsSuccess'] = true;
           $JSONArray['Msg'] = "Succefully";
-	    }else if( $methodParam=="remove"){
-	      
 	    }
 	    
       $response = new Response(json_encode($JSONArray));
@@ -194,30 +186,40 @@ class ScheduleController extends Controller
     public function scheduleUpdateAction(Request $request,$id)
     {
     
+      $JSONArray = array();
+	     
+          
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Event entity.');
+          $JSONArray['IsSuccess'] = false;
+          $JSONArray['Msg'] = "entity not found"; 
+          $response = new Response(json_encode($JSONArray));
+          $response->headers->set('Content-Type', 'application/json');
+          return $response;
         }
+        
+        $JSONArray['Data'] = $id;
  
         $editForm = $this->createForm(new EventType(), $entity);
-        $editForm->bind($request);
-        echo $editForm->isValid()?"ok":"bad";
-        if ($editForm->isValid()) {
-            echo $entity;
+        $editForm->bind($request); 
+        if ($editForm->isValid()) { 
             $em->persist($entity);
             $em->flush();
-
-            $this->get('session')->getFlashBag()->add(
-                'info',
-                $this->get('translator')->trans('%entity%[%id%] has been updated', array(
-                    '%entity%' => 'Event',
-                    '%id%'     => $entity->getId()
-                ))
-            ); 
-            return new Response(json_encode(array("ok")));
+ 
+          $JSONArray['IsSuccess'] = true;
+          $JSONArray['Msg'] = "update success"; 
+          
+          
+        }else{
+          $JSONArray['IsSuccess'] = false;
+          $JSONArray['Msg'] = "update failed"; 
+        
         }
+        $response = new Response(json_encode($JSONArray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
 
       
     }

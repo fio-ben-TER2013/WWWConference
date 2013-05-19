@@ -1534,6 +1534,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
               console.log(e); 
               console.log(data); 
               option.EditCmdhandler( data);
+              render();
             /*
                 if (option.quickDeleteUrl != "" && data[8] == 1 && option.readonly != true) {
                     var csbuddle = '<div id="bbit-cs-buddle" style="z-index: 180; width: 400px;visibility:hidden;" class="bubble"><table class="bubble-table" cellSpacing="0" cellPadding="0"><tbody><tr><td class="bubble-cell-side"><div id="tl1" class="bubble-corner"><div class="bubble-sprite bubble-tl"></div></div><td class="bubble-cell-main"><div class="bubble-top"></div><td class="bubble-cell-side"><div id="tr1" class="bubble-corner"><div class="bubble-sprite bubble-tr"></div></div>  <tr><td class="bubble-mid" colSpan="3"><div style="overflow: hidden" id="bubbleContent1"><div><div></div><div class="cb-root"><table class="cb-table" cellSpacing="0" cellPadding="0"><tbody><tr><td class="cb-value"><div class="textbox-fill-wrapper"><div class="textbox-fill-mid"><div id="bbit-cs-what" title="'
@@ -1757,7 +1758,10 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 return;
             }
             what = prompt("Please enter an event name","New event");
-            if(!what) return;
+            if(!what) {
+              render();
+              return;
+            }
             
             var zone = new Date().getTimezoneOffset() / 60 * -1; 
             start.setHours(start.getHours()+zone);

@@ -19,13 +19,7 @@
              <div id="errorpannel" class="ptogtitle loaderror" style="display: none;">Sorry, could not load your data, please try again later</div>
             </div>          
             
-            <div id="caltoolbar" class="ctoolbar">
-              <div id="faddbtn" class="fbutton">
-                <div><span title='Click to Create New Event' class="addcal">
-
-                New Event                
-                </span></div>
-            </div>
+            <div id="caltoolbar" class="ctoolbar"> 
             <div class="btnseparator"></div>
              <div id="showtodaybtn" class="fbutton">
                 <div><span title='Click to back to today ' class="showtoday">
@@ -189,7 +183,7 @@
                 if(data)
                 {
                     var url = StrFormat(eurl,data);
-                    OpenModelWindow(url,{ width: 600, height: 400, caption:"Manage  The Calendar",onclose:function(){
+                    OpenModelWindow(url,{ width: 600, height: 400, caption:"Edit event",onclose:function(){
                        $("#gridcontainer").reload();
                     }});
                 }
@@ -219,6 +213,8 @@
                 })
                 $("#showdaybtn").addClass("fcurrent");
             }
+            
+            
             //to show day view
             $("#showdaybtn").click(function(e) {
                 //document.location.href="#day";
@@ -260,15 +256,7 @@
             $("#showreflashbtn").click(function(e){
                 $("#gridcontainer").reload();
             });
-            
-            //Add a new event
-            $("#faddbtn").click(function(e) {
-                alert("TODO add event");
-                /*
-                var url ="edit.php";
-                OpenModelWindow(url,{ width: 500, height: 400, caption: "Create New Calendar"});
-                */
-            });
+             
             //go to today
             $("#showtodaybtn").click(function(e) {
                 var p = $("#gridcontainer").gotoDate().BcalGetOp();

@@ -4,48 +4,233 @@
 {% block body %}
  
 
-<div class="page-header">
-  <h1>{% trans %}Edit{% endtrans %}</h1>
-</div>
-
-<ul class="record_actions">
-    <li>
-        <button type="submit" class="btn btn-primary">{% trans %}Update event{% endtrans %}</button> 
-    </li>
-    <li>
-        <form action="{{ path('admin_schedule_event_delete', { 'id': entity.id }) }}" method="post">
-            {{ form_widget(delete_form) }}
-            <button type="submit" class="btn btn-danger">{% trans %}Delete{% endtrans %}</button>
-        </form>
-    </li>
-</ul>
-
-    <form id="event"  > 
+    <form id="event"  class="form-horizontal" > 
         <p>  
             <div class="control-group">
-            {{ form_row(formEvent.summary) }}
-            {{ form_row(formEvent.description) }} 
-            {{ form_row(formEvent.categories) }}
-            {{ form_row(formEvent.status) }}
-            {{ form_row(formEvent.url) }}
-            {{ form_row(formEvent.organizer) }}
-            {{ form_row(formEvent.contacts) }}
-            {{ form_row(formEvent.location) }}
-            {{ form_row(formEvent.resources) }}
-            
+                <label class="control-label" for="idci_simpleschedule_event_type_summary">
+                    {{ form_label(formEvent.summary) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.summary) }}
+                    {{ form_errors(formEvent.summary) }}
+                </div>
             </div> 
-            <div style="visibility:hidden;height:0px;" id="hiddenInputs">     {{ form_rest(formEvent )}}</div> 
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_description">
+                    {{ form_label(formEvent.description) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.description) }}
+                    {{ form_errors(formEvent.description) }}
+                </div>
+            </div> 
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_categories">
+                    {{ form_label(formEvent.categories) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.categories) }}
+                    {{ form_errors(formEvent.categories) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_status">
+                    {{ form_label(formEvent.status) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.status) }}
+                    {{ form_errors(formEvent.status) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_url">
+                    {{ form_label(formEvent.url) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.url) }}
+                    {{ form_errors(formEvent.url) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_organizer">
+                    {{ form_label(formEvent.organizer) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.organizer) }}
+                    {{ form_errors(formEvent.organizer) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_contacts">
+                    {{ form_label(formEvent.contacts) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.contacts) }}
+                    {{ form_errors(formEvent.contacts) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_location">
+                    {{ form_label(formEvent.location) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.location) }}
+                    {{ form_errors(formEvent.location) }}
+                </div>
+            </div>  
+            
+            <div class="control-group">
+                <label class="control-label" for="idci_simpleschedule_event_type_resources">
+                    {{ form_label(formEvent.resources) }}
+                </label> 
+                <div class="controls">
+                    {{ form_widget(formEvent.resources) }}
+                    {{ form_errors(formEvent.resources) }}
+                </div>
+            </div>   
+        <div style="visibility:hidden;display:none;height:0px;" id="hiddenInputs">     {{ form_rest(formEvent )}}</div> 
         </p>
-    <button type="submit" class="btn btn-primary">{% trans %}Update event{% endtrans %}</button>
-    <a class="btn" href="{{ path('admin_schedule_event') }}">
-            {% trans %}View all events{% endtrans %}
-        </a>
-    </form>
+              
+        <div class="control-group">
+          <div class="controls">
+              <button type="submit" class="btn btn-success">{% trans %}Update event{% endtrans %}</button> 
+              <button id="deleteEventBtn" class="btn btn-danger">{% trans %}Delete event{% endtrans %}</button> 
+          </div>
+        </div>
+  </form> 
+  <form id="deleteEventForm" style="visibility:hidden;display:none;height:0px;">
+      {{ form_widget(delete_form) }}
+      <button type="submit" class="btn btn-danger">{% trans %}Delete event{% endtrans %}</button>
+  </form> 
 
-{% include "IDCISimpleScheduleBundle:Event:xproperties.html.twig" with {"with_form": true} %}
-{% include "IDCISimpleScheduleBundle:Event:relation.html.twig" with {"with_form": true} %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namespace</th>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for xproperty in entity.xproperties %}
+            <tr>
+                <td>{{ xproperty.xNamespace }}</td>
+                <td>{{ xproperty.xKey }}</td>
+                <td>{{ xproperty.xValue }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="3">
+                <form action="{{ path('admin_schedule_xproperty_add', { 'calendar_entity_id': entity.id}) }}" method="post" class="form-horizontal"> 
+                    <div class="control-group">
+                        <label class="control-label" for="idci_bundle_simpleschedulebundle_xpropertytype_xnamespace">
+                            {{ form_label(xproperty_form.xnamespace) }}
+                        </label> 
+                        <div class="controls">
+                            {{ form_widget(xproperty_form.xnamespace) }}
+                            {{ form_errors(xproperty_form.xnamespace) }}
+                        </div>
+                    </div>  
+                    <div class="control-group">
+                        <label class="control-label" for="idci_bundle_simpleschedulebundle_xpropertytype_xkey">
+                            {{ form_label(xproperty_form.xkey) }}
+                        </label> 
+                        <div class="controls">
+                            {{ form_widget(xproperty_form.xkey) }}
+                            {{ form_errors(xproperty_form.xkey) }}
+                        </div>
+                    </div>  
+                    <div class="control-group">
+                        <label class="control-label" for="idci_bundle_simpleschedulebundle_xpropertytype_xvalue">
+                            {{ form_label(xproperty_form.xvalue) }}
+                        </label> 
+                        <div class="controls">
+                            {{ form_widget(xproperty_form.xvalue) }}
+                            {{ form_errors(xproperty_form.xvalue) }}
+                        </div>
+                    </div>  
+                    <button type="submit" class="btn btn-primary">{% trans %}Add xproperty{% endtrans %}</button>
+                </form>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+<table class="table">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>Relation</th>
+            <th>startAt</th>
+            <th>summary</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for relation in entity.getRelateds() %} 
+            <tr> 
+                <td>{{ relation.id }}</td>
+                <th>{{ relation.relationType }}</th>
+                <td>{{ relation.relatedTo.startAt | date('Y-m-d') }}</td>
+                <td>{{ relation.relatedTo.summary }}</td>
+            </tr> 
+        {% endfor %}
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <form action="{{ path('admin_schedule_relation_add', { 'calendar_entity_id': entity.id}) }}" method="post" class="form-horizontal">
+                    <div class="control-group">
+                        <label class="control-label" for="idci_simpleschedule_calendarentityrelation_type_relatedTo">
+                            {{ form_label(relation_form.relatedTo) }}
+                        </label> 
+                        <div class="controls">
+                            {{ form_widget(relation_form.relatedTo) }}
+                            {{ form_errors(relation_form.relatedTo) }}
+                        </div>
+                    </div>  
+                    <div class="control-group">
+                        <label class="control-label" for="idci_simpleschedule_calendarentityrelation_type_relationType">
+                            {{ form_label(relation_form.relationType) }}
+                        </label> 
+                        <div class="controls">
+                            {{ form_widget(relation_form.relationType) }}
+                            {{ form_errors(relation_form.relationType) }}
+                        </div>
+                    </div>  
+                    {{ form_widget(relation_form) }}
+                    <button type="submit" class="btn btn-primary">{% trans %}Add relation{% endtrans %}</button>
+                </form>
+            </td>
+        </tr>
+    </tfoot>
+</table>
 
 {% endblock body %}
+
+
+
+
+ {% block stylesheets %}
+ <style type="text/css">
+
+    .form-horizontal .control-group {
+       margin-bottom: 7px; 
+    } 
+ </style>
+{% endblock stylesheets %}
+
 
 
 {%  block javascripts %} 
@@ -54,12 +239,12 @@
 <script type="text/javascript" src="http://www.jibbering.com/rdf-parser/parser.js"></script>
 <script src="{{ asset('bundles/fibewwwconf/js/autocompletion.js') }}" type="text/javascript" ></script>
 <script src="{{ asset('bundles/fibewwwconf/js/SWDF.js') }}" type="text/javascript" ></script>
-
+<script src=" {{ asset('wdcalendar/js/Common.js') }}" type="text/javascript"></script>    
 <script type="text/javascript" >
  
  
 
-function FormPost(uri,form){
+function FormPost(uri,form,callback){
     $.ajax({
         type: "POST",
         url:uri,
@@ -67,6 +252,7 @@ function FormPost(uri,form){
         data: form.serialize(),
         success:function(a,b,c) {
                      console.log(a,b,c);
+                     if(callback)callback();
         }
     });
 } 
@@ -88,6 +274,16 @@ function getUrlVars()
 
 $(document).ready(function(){ 
     
+    $("#deleteEventBtn").click(function() { 
+        FormPost("{{ path('admin_schedule_event_delete', { 'id': entity.id }) }}",$("#deleteEventForm"),function(){
+                  CloseModelWindow(null,true);
+                  
+                  '<div class="alert alert-info"><button type="button" clajss="close" data-dismiss="alert">×</button>Event has been updated</div>';
+        });
+        
+      return false;
+    });
+            
     $('#event').submit(function(event) {
         //edit event
         event.preventDefault();
