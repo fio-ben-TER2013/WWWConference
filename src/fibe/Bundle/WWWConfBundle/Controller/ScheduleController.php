@@ -59,8 +59,15 @@ class ScheduleController extends Controller
 	    
 	    if( $methodParam=="list"){
 	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) ); 
+	        
           $week_start = date('m/d/Y H:i', strtotime('this week last monday', $date));
           $week_end = date('m/d/Y H:i', strtotime('this week next monday ', $date)); 
+              
+	        if($postData['viewtype']=="month"){
+              $week_start = date('m/d/Y H:i', strtotime('this month last monday', $date));
+              $week_end = date('m/d/Y H:i', strtotime('this month next monday ', $date));
+	        } 
+	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) );  
           $JSONArray['start'] = $week_start;
           $JSONArray['end'] = $week_end;
           $JSONArray['error'] = null;
@@ -82,19 +89,24 @@ class ScheduleController extends Controller
           
           $start =  $eventsEntities[$i]->getStartAt() ; 
           $end =  $eventsEntities[$i]->getEndAt() ; 
-          $duration =  $end->diff($start) ; 
+          $duration =   $end->diff($start) ; 
+          $duration =  ($duration->y * 365 * 24 * 60 * 60) + 
+                       ($duration->m * 30 * 24 * 60 * 60) + 
+                       ($duration->d * 24 * 60 * 60) + 
+                       ($duration->h * 60 * 60) + 
+                       ($duration->i * 60) + 
+                       $duration->s;
+          //echo $eventsEntities[$i]->getSummary().", ".$duration." .... ";
           $category = $eventsEntities[$i]->getCategories();
-          $category = $category[0]; 
-          
-          //TODO : all day event
+          $category = $category[0];  
           $JSONArray['events'][] = array(
             $eventsEntities[$i]->getId(),
             $eventsEntities[$i]->getSummary(),
             $start->format('m/d/Y H:i'),
             $end->format('m/d/Y H:i'),
             0,                                  // disable alarm clock icon
-            0,                                  // all day event
-            0,                                  // Recurring event
+            $duration % 86400 == 86399 ? 1 : 0,                                  // all day event
+            0,                                  // ??
             $category?$category->getId():null,                 // color
             1,                                  // editable
             $eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null, // location if exists
@@ -106,9 +118,17 @@ class ScheduleController extends Controller
 	    }else if( $methodParam=="add"){
         
           $event= new Event();
+          $startAt=new \DateTime($postData['start'], new \DateTimeZone(date_default_timezone_get()));
+          $event->setStartAt($startAt );
           
-          $event->setStartAt(new \DateTime($postData['start'], new \DateTimeZone(date_default_timezone_get())));
-          $event->setEndAt(new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get())));
+          if($postData['isallday']=="true"){
+              $endAt = new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()));   
+              $event->setEndAt($endAt->add(new \DateInterval('PT23H59M59S'))); 
+          }
+          else {
+              $event->setEndAt(new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()))); 
+           }
+          
           $event->setSummary($postData['title']);
           $em->persist($event);
           $em->flush();  
