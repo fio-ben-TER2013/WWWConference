@@ -11,7 +11,9 @@ use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
 use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
 use IDCI\Bundle\SimpleScheduleBundle\Form\RecurChoiceType;
-use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType;
+
+use fibe\Bundle\WWWConfBundle\Form\XPropertyType; 
+
 use IDCI\Bundle\SimpleScheduleBundle\Form\CalendarEntityRelationType;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -64,8 +66,8 @@ class ScheduleController extends Controller
           $week_end = date('m/d/Y H:i', strtotime('this week next monday ', $date)); 
               
 	        if($postData['viewtype']=="month"){
-              $week_start = date('m/d/Y H:i', strtotime('this month last monday', $date));
-              $week_end = date('m/d/Y H:i', strtotime('this month next monday ', $date));
+              $week_start = date('m/d/Y H:i', strtotime('last month last monday', $date));
+              $week_end = date('m/d/Y H:i', strtotime('next month first monday ', $date));
 	        } 
 	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) );  
           $JSONArray['start'] = $week_start;
@@ -96,7 +98,7 @@ class ScheduleController extends Controller
                        ($duration->h * 60 * 60) + 
                        ($duration->i * 60) + 
                        $duration->s;
-          //echo $eventsEntities[$i]->getSummary().", ".$duration." .... ";
+          //echo $eventsEntities[$i]->getSummary().", ".$duration % 86400 ." .... ";
           $category = $eventsEntities[$i]->getCategories();
           $category = $category[0];  
           $JSONArray['events'][] = array(
@@ -105,7 +107,7 @@ class ScheduleController extends Controller
             $start->format('m/d/Y H:i'),
             $end->format('m/d/Y H:i'),
             0,                                  // disable alarm clock icon
-            $duration % 86400 == 86399 ? 1 : 0,                                  // all day event
+            ($duration % 86400 == 86399 || $duration % 86400 == 0 ) ? 1 : 0,                                  // all day event
             0,                                  // ??
             $category?$category->getId():null,                 // color
             1,                                  // editable
@@ -169,6 +171,8 @@ class ScheduleController extends Controller
         
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
+         
+        $SWCLink = $em->getRepository('fibeWWWConfBundle:SWCLink')->find(1);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Event entity.');
@@ -193,7 +197,8 @@ class ScheduleController extends Controller
             'formEvent'         => $form->createView(),
             'delete_form'       => $deleteForm->createView(),
             'xproperty_form'    => $xpropertyForm->createView(),
-            'relation_form'     => $relationForm->createView()
+            'relation_form'     => $relationForm->createView(),
+            'SparqlUrl'         => $SWCLink->getConfUri()
         );
       
     }
@@ -244,7 +249,37 @@ class ScheduleController extends Controller
       
     }
     
+    /**
+     * @Route("/{id}/xpropAdd", name="wwwconf_xproperty_add") 
+     */
      
+    public function xpropAddAction(Request $request,$id)
+    {
+    
+        $em = $this->getDoctrine()->getManager();
+        $calendarEntity = $em->getRepository('IDCISimpleScheduleBundle:CalendarEntity')->find($id);
+
+        if (!$calendarEntity) {
+            throw $this->createNotFoundException('Unable to find Calendar entity.');
+        }
+
+        $entity = new XProperty();
+        $form = $this->createForm(new XPropertyType, $entity);
+        $form->bind($request);
+
+        if ($form->isValid()) {
+            $em->persist($entity);
+            $em->flush();
+        } else {
+            die('todo: flash message');
+        }
+
+        $response = new Response(json_encode("ok"));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    
+     
+    }
 }
 
 

@@ -260,7 +260,7 @@
 <script type="text/javascript" src="http://www.jibbering.com/rdf-parser/parser.js"></script>
 <script src="{{ asset('bundles/fibewwwconf/js/autocompletion.js') }}" type="text/javascript" ></script>
 <script src="{{ asset('bundles/fibewwwconf/js/SWDF.js') }}" type="text/javascript" ></script>
-<script src=" {{ asset('wdcalendar/js/Common.js') }}" type="text/javascript"></script>    
+<script src=" {{ asset('wdcalendar/js/Common.js') }}" type="text/javascript"></script>     
 <script type="text/javascript" >
  
  
@@ -293,8 +293,29 @@ function getUrlVars()
     return vars;
 }
 
+function autoCompletePublication(){
+    
+    var swdf=new SWDF("{{ SparqlUrl }}");
+    swdf.buildQry();
+    /*swdf.doQry(function(){
+      console.log(swdf);
+      $('#idci_bundle_simpleschedulebundle_xpropertytype_xvalue').typeahead({source:swdf});
+      autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xvalue'),swdf.toArray());
+    });*/
+}
+
 $(document).ready(function(){ 
     
+    //autocomplete  {{ SparqlUrl }}
+    $('#idci_bundle_simpleschedulebundle_xpropertytype_xnamespace').change(function(){
+        var xNamespace = $(this).val();
+        if( xNamespace == "publication_uri") autoCompletePublication();
+        else if( xNamespace == "event_uri") autoCompleteEvent();
+        else if( xNamespace == "location_uri") autoCompleteLocation();
+    });
+    autoCompletePublication();
+    
+    //form handler
     $("#deleteEventBtn").click(function() { 
         FormPost("{{ path('admin_schedule_event_delete', { 'id': entity.id }) }}",$("#deleteEventForm"),function(){
                   CloseModelWindow(null,true);
@@ -304,7 +325,7 @@ $(document).ready(function(){
     
     $('#xpropertyForm').submit(function(event) {
         event.preventDefault();
-        FormPost("{{ path('admin_schedule_xproperty_add', { 'calendar_entity_id': entity.id}) }}",$(this),function(){
+        FormPost("{{ path('wwwconf_xproperty_add', { 'id': entity.id}) }}",$(this),function(){
                    window.location.reload();
         });
       return false;

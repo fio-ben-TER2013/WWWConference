@@ -1,29 +1,6 @@
 
-//PREPARE MODAL
- var modal='<!-- type "run()" in js console to import DB -->\
-    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">\
-      <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
-      <h3 id="myModalLabel">Import DB</h3>\
-    </div>\
-    <div class="modal-body">\
-      <h3 class="text-warning">Be carefull ! this action isn\'t cancelable</h3>\
-      <h4>Please, provide a complete Conf RDF File </h4>\
-      <h5 class="muted"><i>(such as : http://data.semanticweb.org/conference/www/2012/complete)</i></h5>\
-        <div class="input-append">\
-          <input type="text" id="DBURL" placeholder="Complete Conf rdf File"></input>\
-          <button  id="DBURLBtn" data-dismiss="modal" class="btn">\
-            <i class="icon-download-alt"></i> \
-            import\
-          </button>\
-          </div>\
-        </div>\
-        <div class="modal-footer">\
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>\
-        </div>\
-      </div>';
- $('body').append($(modal).hide());
- function run(dbimportpath){ 
-    $('#myModal').modal(); 
+ function run(dbimportpath,modalId){ 
+    $('#'+modalId).modal(); 
     $('#DBURLBtn').off('click').click({dbimportpath:dbimportpath},function(event){
         
         if( $('#DBURL').val()=="")return;

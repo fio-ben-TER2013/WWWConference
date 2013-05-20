@@ -448,12 +448,9 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
             html.push("</tbody></table></td></tr></tbody></table></div>");
             gridcontainer.html(html.join(""));
             html = null;
-            //TODO event handlers
-            //$("#weekViewAllDaywk").click(RowHandler);
         }
         //build month view
-        function BuildMonthView(showday, events, config) {
-        alert("TODO afficher les évenement des semaines précédentes");
+        function BuildMonthView(showday, events, config) { 
             var cc = "<div id='cal-month-cc' class='cc'><div id='cal-month-cc-header'><div class='cc-close' id='cal-month-closebtn'></div><div id='cal-month-cc-title' class='cc-title'></div></div><div id='cal-month-cc-body' class='cc-body'><div id='cal-month-cc-content' class='st-contents'><table class='st-grid' cellSpacing='0' cellPadding='0'><tbody></tbody></table></div></div></div>";
             var html = [];
             html.push(cc);
