@@ -74,7 +74,8 @@
 
 {%  block javascripts %} 
 
-        <script src="{{ asset('bundles/fibewwwconf/js/SWCLinkSettings.js') }}" type="text/javascript" ></script>
+        <script src="{{ asset('bundles/fibewwwconf/js/OWLImporter.js') }}" type="text/javascript" ></script>
+        <script src="{{ asset('bundles/fibewwwconf/js/moment.min.js') }}" type="text/javascript" ></script>
          <script type="text/javascript" >
          
     
@@ -98,7 +99,7 @@
                
             $('#SWCLinkForm').submit(function(event) {
                 event.preventDefault();
-                //test sparql url
+                //test sparql endpoint
                 $.ajax({
                     type: "GET",
                     url:$('#form_confUri').val()+'?query=SELECT+DISTINCT+*+WHERE+%7B+%3Fs+%3Fp+%3Fo+%7D%0D%0ALIMIT+1', 

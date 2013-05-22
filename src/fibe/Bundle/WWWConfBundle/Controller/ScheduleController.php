@@ -198,7 +198,7 @@ class ScheduleController extends Controller
             'delete_form'       => $deleteForm->createView(),
             'xproperty_form'    => $xpropertyForm->createView(),
             'relation_form'     => $relationForm->createView(),
-            'SparqlUrl'         => $SWCLink->getConfUri()
+            'SparqlUrl'         => ($SWCLink?$SWCLink->getConfUri():null)
         );
       
     }
