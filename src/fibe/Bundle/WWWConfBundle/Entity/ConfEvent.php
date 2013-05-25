@@ -21,12 +21,20 @@ class ConfEvent extends Event
      *
      * @ORM\ManyToOne(targetEntity="fibe\Bundle\WWWConfBundle\Entity\WwwConf", inversedBy="confEvents", cascade={"persist"})
      * @ORM\JoinColumn(name="wwwConf_id", referencedColumnName="id", onDelete="Set null")
-      
      */
     private $wwwConf;
     
-       
-
+    
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+	    parent::__construct();
+    }
+    
+    
     /**
      * Set wwwConf
      *
@@ -48,5 +56,5 @@ class ConfEvent extends Event
     public function getWwwConf()
     {
         return $this->wwwConf;
-    } 
+    }  
 }

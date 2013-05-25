@@ -365,9 +365,10 @@ class CalendarEntity
     public static function getDiscrs()
     {
         return array(
-            self::EVENT   => self::EVENT,
-            self::TODO    => self::TODO,
-            self::JOURNAL => self::JOURNAL
+            self::EVENT     => self::EVENT,
+            self::TODO      => self::TODO,
+            self::JOURNAL   => self::JOURNAL,
+            
         );
     }
 

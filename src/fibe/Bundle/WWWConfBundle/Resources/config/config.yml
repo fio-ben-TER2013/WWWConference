@@ -2,7 +2,7 @@ idci_exporter:
     api_route: "/api/{entity_reference}.{_format}"
     entities:
         schedule_event:
-            class: "IDCI\\Bundle\\SimpleScheduleBundle\\Entity\\WwwConf"
+            class: "fibe\\Bundle\\WWWConfBundle\\Entity\\ConfEvent"
             formats:
                 jsonp:
                     transformer:

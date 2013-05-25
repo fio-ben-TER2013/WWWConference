@@ -269,6 +269,13 @@ class CalendarEntityRepository extends EntityRepository
                 ->setParameter('child_id', $params['child_id'])
             ;
         }
+        
+        if(isset($params['wwwconf_id'])) {
+            $qb
+                ->andWhere('cer.wwwConf = :wwwconf_id')
+                ->setParameter('wwwconf_id', $params['wwwconf_id'])
+            ;
+        }
 
         return $qb;
     }
