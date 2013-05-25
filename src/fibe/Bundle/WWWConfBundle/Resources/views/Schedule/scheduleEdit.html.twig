@@ -118,7 +118,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Namespace</th>
+            <th>LIink Type</th>
             <th>Key</th>
             <th>Value</th>
         </tr>
@@ -297,11 +297,44 @@ function autoCompletePublication(){
     
     var swdf=new SWDF("{{ SparqlUrl }}");
     swdf.buildQry();
-    /*swdf.doQry(function(){
-      console.log(swdf);
-      $('#idci_bundle_simpleschedulebundle_xpropertytype_xvalue').typeahead({source:swdf});
-      autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xvalue'),swdf.toArray());
-    });*/
+    swdf.doQry(swdf.toArray);
+    console.log(swdf);
+	console.log(swdf.arrayResult);
+	 
+ /*  $('#idci_bundle_simpleschedulebundle_xpropertytype_xkey').typeahead({source:  function() {  return swdf.arrayResult; },
+																												updater : function(item){
+																														$("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(item.uri).addClass("inputSuccess");
+																														$('#form_xvalue').val(item.uri);
+																														$('#form_xkey').val(item.uri);
+																														$("#uriLink div").removeClass("warning").addClass("success");
+																														$("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
+																												}
+   
+																								});*/
+   autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),swdf.arrayResult);
+    
+}
+
+function autoCompleteEvent(){
+    
+    var swdf=new SWDF("{{ SparqlUrl }}");
+	swdf.$select = 	'   ?uriEvent ?eventLabel   '; 
+	swdf.$whereClause =  ' ?uriEvent rdfs:label ?eventLabel. '+
+								     ' ?uriEvent rdf:type swc:TrackEvent.   ';
+    swdf.buildQry();
+    swdf.doQry(swdf.toArray2);
+	console.log(swdf.arrayResult);
+	/* $('#idci_bundle_simpleschedulebundle_xpropertytype_xkey').typeahead({source:  function() { return swdf.arrayResult; },
+																												updater : function(item){
+																														$("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(item.uri).addClass("inputSuccess");
+																														$('#form_xvalue').val(item.uri);
+																														$('#form_xkey').val(item.uri);
+																														$("#uriLink div").removeClass("warning").addClass("success");
+																														$("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
+																												}
+   
+																								});*/
+	autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),swdf.arrayResult);
 }
 
 $(document).ready(function(){ 
@@ -311,7 +344,6 @@ $(document).ready(function(){
         var xNamespace = $(this).val();
         if( xNamespace == "publication_uri") autoCompletePublication();
         else if( xNamespace == "event_uri") autoCompleteEvent();
-        else if( xNamespace == "location_uri") autoCompleteLocation();
     });
     autoCompletePublication();
     
