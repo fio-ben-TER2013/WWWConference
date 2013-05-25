@@ -17,9 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * Purpose: This class of property provides a framework for defining non-standard properties
  *
- * @ORM\Table(name="idci_schedule_xproperty", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="idxUnique", columns={"x_namespace", "x_key"})
- * })
  * @ORM\Entity(repositoryClass="IDCI\Bundle\SimpleScheduleBundle\Repository\XPropertyRepository")
  */
 class XProperty

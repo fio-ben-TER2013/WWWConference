@@ -6,7 +6,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 //On insere l'entity Event  de simple schedule
 
-use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
+use fibe\Bundle\WWWConfBundle\Entity\ConfEvent as Event;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
 use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
@@ -45,10 +45,28 @@ class ScheduleController extends Controller
     
 
 /**
- *   return all events contained in the given date week
- * @Route("/getEvents", name="wwwconf_getevents")
+ *  @Route("/conf-{confId}", name="wwwconf_schedule_confId")
+ *  @Template("fibeWWWConfBundle:Schedule:schedule.html.twig")
  */
-    public function getEventsAction(Request $request)
+    public function scheduleConfIdAction(Request $request,$confId)
+    {
+    
+        $em = $this->getDoctrine()->getManager(); 
+        $entity  =  $this->getDoctrine()
+                         ->getRepository('fibeWWWConfBundle:WwwConf')
+                         ->find($confId);
+        if($entity && $entity->getConfManager() == $this->get('security.context')->getToken()->getUser() )
+        {
+            return array('currentConf' => $entity);
+        }
+        return $this->redirect($this->generateUrl('wwwconf_schedule'));
+    } 
+
+/**
+ *   return all events contained in the given date week
+ * @Route("/getEvents/{confId}", name="wwwconf_getevents")
+ */
+    public function getEventsAction(Request $request,$confId=null)
     {
     
 	    $em = $this->getDoctrine()->getManager();
@@ -56,106 +74,136 @@ class ScheduleController extends Controller
 	    $getData = $request->query;
 	    $methodParam = $getData->get('method', ''); 
 	    $postData = $request->request->all();
+        $currentManager=$this->get('security.context')->getToken()->getUser();
 	    
       $JSONArray = array();
 	    
-	    if( $methodParam=="list"){
-	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) ); 
-	        
-          $week_start = date('m/d/Y H:i', strtotime('this week last monday', $date));
-          $week_end = date('m/d/Y H:i', strtotime('this week next monday ', $date)); 
+	    if( $methodParam=="list")
+	    {
+            $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) ); 
+
+            $week_start = date('m/d/Y H:i', strtotime('last week last sunday', $date));
+            $week_end = date('m/d/Y H:i', strtotime('next week first monday ', $date)); 
+
+            if($postData['viewtype']=="month")
+            {
+                $week_start = date('m/d/Y H:i', strtotime('last month last monday', $date));
+                $week_end = date('m/d/Y H:i', strtotime('next month first monday ', $date));
+            } 
+            $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) );  
+            $JSONArray['start'] = $week_start;
+            $JSONArray['end'] = $week_end;
+            $JSONArray['error'] = null;
+            $JSONArray['issort'] = true;
+
+            $eventsEntities=[];
+            if($confId==null){
+                $confs = $currentManager->getWwwConf();
+                foreach($confs as $conf){
+                    $events = $conf->getConfEvents();
+                    foreach($events as $event){ 
+                        $eventsEntities[] = $event;  
+                    } 
+                }
+            }else
+            {
+                $conf  =  $this->getDoctrine()
+                                 ->getRepository('fibeWWWConfBundle:WwwConf')
+                                 ->find($confId);
+                                 
+                if($conf && $conf->getConfManager() == $this->get('security.context')->getToken()->getUser()){
+                    $events = $conf->getConfEvents();
+                    foreach($events as $event){ 
+                        $eventsEntities[] = $event;  
+                    } 
+                }else
+                {
+                    $response = new Response(json_encode("permission denied"));
+                }
+            }
+            $JSONArray['events'] = array();
+            for ($i = 0; $i < count($eventsEntities); $i++) {
+
+                $start =  $eventsEntities[$i]->getStartAt() ; 
+                $end =  $eventsEntities[$i]->getEndAt() ; 
+                $duration =   $end->diff($start) ; 
+                $duration = ($duration->y * 365 * 24 * 60 * 60) + 
+                            ($duration->m * 30 * 24 * 60 * 60) + 
+                            ($duration->d * 24 * 60 * 60) + 
+                            ($duration->h * 60 * 60) + 
+                            ($duration->i * 60) + 
+                            $duration->s; 
+                //echo $eventsEntities[$i]->getSummary().", ".$duration % 86400 ." .... ";
+                $category = $eventsEntities[$i]->getCategories();
+                $category = $category[0];  
+                $JSONArray['events'][] = array(
+                    $eventsEntities[$i]->getId(),
+                    $eventsEntities[$i]->getSummary(),
+                    $start->format('m/d/Y H:i'),
+                    $end->format('m/d/Y H:i'),
+                    1,                                  // disable alarm clock icon
+                    ($duration % 86400 == 86399 || $duration % 86400 == 0 ) ? 1 : 0,     // all day event
+                    0,                                  // ??
+                    $category?$category->getId():null,                 // color
+                    1,                                  // editable
+                    $eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null, // location if exists
+                    null                                // $attends
+                );       
+            }
+
+        }else if( $methodParam=="add" && $confId!=null)
+        {
+            $conf = $this->getDoctrine()
+                         ->getRepository('fibeWWWConfBundle:WwwConf')
+                         ->find($confId);
+                             
+            if($conf && $conf->getConfManager() == $this->get('security.context')->getToken()->getUser()){
+                      
+                    
+                $event= new Event();
+                $startAt=new \DateTime($postData['start'], new \DateTimeZone(date_default_timezone_get()));
+                $event->setStartAt($startAt );  
+                if($postData['isallday']=="true"){
+                  $endAt = new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()));   
+                  $event->setEndAt($endAt->add(new \DateInterval('PT23H59M59S'))); 
+                }
+                else {
+                  $event->setEndAt(new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()))); 
+                }
+                $event->setSummary($postData['title']);
+                $event->setWwwConf($conf);
+                
+                $em->persist($event);
+                $em->flush();  
+
+                $JSONArray['Data'] = $event->getId();
+                $JSONArray['IsSuccess'] = true;
+                $JSONArray['Msg'] = "add success";
+                
+            }else
+            {
+                $JSONArray['Data'] = $event->getId();
+                $JSONArray['IsSuccess'] = false;
+                $JSONArray['Msg'] = "permission denied";
+            }
               
-	        if($postData['viewtype']=="month"){
-              $week_start = date('m/d/Y H:i', strtotime('last month last monday', $date));
-              $week_end = date('m/d/Y H:i', strtotime('next month first monday ', $date));
-	        } 
-	        $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) );  
-          $JSONArray['start'] = $week_start;
-          $JSONArray['end'] = $week_end;
-          $JSONArray['error'] = null;
-          $JSONArray['issort'] = true;
-          
-          
-          $eventsEntities =  $em->getRepository('IDCISimpleScheduleBundle:Event')
-                        ->createQueryBuilder('e')
-                        ->where('e.startAt > :weekStart')
-                        ->andWhere('e.endAt < :weekEnd')
-                        ->setParameters(array(
-                          'weekStart'  => date('Y-m-d H:i', strtotime( $week_start)) ,
-                          'weekEnd'    => date('Y-m-d H:i', strtotime( $week_end )),
-                        )) 
-                        ->getQuery()
-                        ->getResult();
-        $JSONArray['events'] = array();
-        for ($i = 0; $i < count($eventsEntities); $i++) {
-          
-          $start =  $eventsEntities[$i]->getStartAt() ; 
-          $end =  $eventsEntities[$i]->getEndAt() ; 
-          $duration =   $end->diff($start) ; 
-          $duration =  ($duration->y * 365 * 24 * 60 * 60) + 
-                       ($duration->m * 30 * 24 * 60 * 60) + 
-                       ($duration->d * 24 * 60 * 60) + 
-                       ($duration->h * 60 * 60) + 
-                       ($duration->i * 60) + 
-                       $duration->s;
-          //echo $eventsEntities[$i]->getSummary().", ".$duration % 86400 ." .... ";
-          $category = $eventsEntities[$i]->getCategories();
-          $category = $category[0];  
-          $JSONArray['events'][] = array(
-            $eventsEntities[$i]->getId(),
-            $eventsEntities[$i]->getSummary(),
-            $start->format('m/d/Y H:i'),
-            $end->format('m/d/Y H:i'),
-            0,                                  // disable alarm clock icon
-            ($duration % 86400 == 86399 || $duration % 86400 == 0 ) ? 1 : 0,                                  // all day event
-            0,                                  // ??
-            $category?$category->getId():null,                 // color
-            1,                                  // editable
-            $eventsEntities[$i]->getLocation()?$eventsEntities[$i]->getLocation()->getName():null, // location if exists
-            null                                // $attends
-          );
-          
+        }else if( $methodParam=="update")
+        { 
+                
+            $event = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($postData['calendarId']);
+            $startAt = new \DateTime($postData['CalendarStartTime'], new \DateTimeZone(date_default_timezone_get()));
+            $endAt =new \DateTime($postData['CalendarEndTime'], new \DateTimeZone(date_default_timezone_get())) ;
+            $event->setStartAt( $startAt );
+            $event->setEndAt( $endAt );
+            $em->persist($event);
+            $em->flush();  
+            $JSONArray['IsSuccess'] = true;
+            $JSONArray['Msg'] = "Succefully";
         }
-        
-	    }else if( $methodParam=="add"){
-        
-          $event= new Event();
-          $startAt=new \DateTime($postData['start'], new \DateTimeZone(date_default_timezone_get()));
-          $event->setStartAt($startAt );
-          
-          if($postData['isallday']=="true"){
-              $endAt = new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()));   
-              $event->setEndAt($endAt->add(new \DateInterval('PT23H59M59S'))); 
-          }
-          else {
-              $event->setEndAt(new \DateTime($postData['end'], new \DateTimeZone(date_default_timezone_get()))); 
-           }
-          
-          $event->setSummary($postData['title']);
-          $em->persist($event);
-          $em->flush();  
-          
-          $JSONArray['Data'] = $event->getId();
-          $JSONArray['IsSuccess'] = true;
-          $JSONArray['Msg'] = "add success";
-          
-          
-	    }else if( $methodParam=="update"){ 
-	        
-          $event = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($postData['calendarId']);
-          $startAt = new \DateTime($postData['CalendarStartTime'], new \DateTimeZone(date_default_timezone_get()));
-          $endAt =new \DateTime($postData['CalendarEndTime'], new \DateTimeZone(date_default_timezone_get())) ;
-          $event->setStartAt( $startAt );
-          $event->setEndAt( $endAt );
-          $em->persist($event);
-          $em->flush();  
-          $JSONArray['IsSuccess'] = true;
-          $JSONArray['Msg'] = "Succefully";
-	    }
 	    
-      $response = new Response(json_encode($JSONArray));
-      $response->headers->set('Content-Type', 'application/json');
-      return $response;
+        $response = new Response(json_encode($JSONArray));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
     
 
@@ -172,7 +220,7 @@ class ScheduleController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
          
-        $SWCLink = $em->getRepository('fibeWWWConfBundle:SWCLink')->find(1);
+        $WwwConf = $em->getRepository('fibeWWWConfBundle:WwwConf')->find(1);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Event entity.');
@@ -198,7 +246,7 @@ class ScheduleController extends Controller
             'delete_form'       => $deleteForm->createView(),
             'xproperty_form'    => $xpropertyForm->createView(),
             'relation_form'     => $relationForm->createView(),
-            'SparqlUrl'         => ($SWCLink?$SWCLink->getConfUri():null)
+            'SparqlUrl'         => ($WwwConf?$WwwConf->getConfUri():null)
         );
       
     }

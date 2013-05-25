@@ -12,14 +12,22 @@
                     <li>
                         <a href="{{ path('wwwconf_schedule') }}" title="manage schedule">Manage schedule</a>
                     </li>
-                
-                    <!--<li>
-                        <a href="{{ path('wwwconf_link_create') }}" title="Go to the new link form">New link</a>
+                    
+                    
+                    {% if app.user.wwwConf|length>0 %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu"> 
+                            {% for conf in app.user.wwwConf %} 
+                            <li><a href="{{ path('wwwconf_schedule_confId', { 'confId': conf.id}) }}">{{ conf.confName }}</a></li>
+                            {% endfor %}
+                        </ul>
                     </li> 
-                    <li>
-                        <a href="{{ path('wwwconf_link_list') }}" title="Go to the new list link">See links</a>
-                    </li> 
-                    --> 
+                    {% endif %}
+                    
+                    
                     <li class="divider-vertical"></li>
                     <li class="divider-vertical"></li>
                     <li>
@@ -37,7 +45,7 @@
                 </ul>
                 <ul class="nav pull-right">
                   <li>
-                        <a href="{{ path('logout') }}" title="logout">Log out</a>
+                        <a href="{{ path('logout') }}" title="logout">Log out {{ app.user.username }}</a>
                     </li>
                 </ul>
             </div>

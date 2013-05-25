@@ -6,16 +6,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-//On insere l'entity Event  de simple schedule
-use fibe\Bundle\WWWConfBundle\Entity\SWCLink; 
+
+use fibe\Bundle\WWWConfBundle\Entity\WwwConf;
+use fibe\Bundle\WWWConfBundle\Form\WwwConfType;
 
 use IDCI\Bundle\SimpleScheduleBundle\Form\XPropertyType; 
 use IDCI\Bundle\SimpleScheduleBundle\Form\EventType;
 use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Event; 
-//use fibe\Bundle\WWWConfBundle\Form\EventType; 
-//On insere le controlleur de Event 
-//use SimpleScheduleBundle\Controller
+
+
 /**
  * Link controller.
  *
@@ -29,29 +29,7 @@ class LinkController extends Controller
  */
     public function indexAction(Request $request)
     {
-	    $em = $this->getDoctrine()->getManager();
-      $SWCLink = $em->getRepository('fibeWWWConfBundle:SWCLink')->find(1); 
-      if( !$SWCLink ) {
-        $SWCLink = new SWCLink();
-      }
-      $form = $this->createFormBuilder($SWCLink)
-          ->add('confUri')
-          ->getForm();
-      if ($request->getMethod() == 'POST') {
-          $form->bind($request);
-
-          if ($form->isValid()) { 
-              $em->persist($SWCLink);
-              $em->flush(); 
-              
-              $response = new Response(json_encode("ok"));
-              $response->headers->set('Content-Type', 'application/json');
-              return $response;
-          } 
-      }
-      
-      return array('SWCLink'     => $SWCLink,
-                   'SWCLinkForm' => $form->createView());
+      return array();
     }
     
 /**
@@ -78,7 +56,7 @@ class LinkController extends Controller
     
 /**
  * @Route("/list", name="wwwconf_link_list")
- * @Template( )
+ * @Template()
  */
     public function listAction()
     {

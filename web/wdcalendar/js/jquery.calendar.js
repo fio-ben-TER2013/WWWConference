@@ -158,7 +158,7 @@
              * @description {Config} height  
              * {Number} Calendar height, false for page height by default.
              */
-            height: false, 
+            height: true, 
             /**
              * @description {Config} url  
              * {String} Url to request calendar data.
@@ -492,7 +492,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 s.day = sD.getDate();
                 s.year = sD.getFullYear();
                 s.month = sD.getMonth() + 1;
-                s.allday = events[j][4] == 1;
+                //s.allday = events[j][4] == 1;
                 s.crossday = events[j][5] == 1;
                 s.reevent = events[j][6] == 1; //Recurring event
                 s.daystr = [s.year, s.month, s.day].join("/");
@@ -1807,8 +1807,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
             tId = Ind(newdata);
 
             realsedragevent();
-            render();
- 
+            render(); 
             
             /*
             var buddle = $("#bbit-cal-buddle");
@@ -2286,6 +2285,8 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 var d = _dragdata;
                 switch (d.type) {
                     case 1:
+                    
+                    if(option.add==false)break;
                         var sy = d.sy;
                         var y = e.pageY;
                         var diffy = y - sy;
@@ -2531,9 +2532,10 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                 var d = _dragdata;
                 switch (d.type) {
                     case 1: //day view
+                    if(option.add==false)break;
                         var wrapid = new Date().getTime();
                         tp = d.target.offset().top;
-                        if (!d.cpwrap) {
+                        if (!d.cpwrap ) {
                             var gh = gH(d.sy, d.sy + 42, tp);
                             var ny = gP(gh.sh, gh.sm);
                             var tempdata = buildtempdayevent(gh.sh, gh.sm, gh.eh, gh.em, gh.h);
@@ -2550,10 +2552,12 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                         quickadd(start, end, false, pos);
                         break;
                     case 2: //week view
-                    case 3: //month view					
+                    case 3: //month view	
+                    if(option.add==false)break;				
                         var source = e.srcElement || e.target;                       
                         var lassoid = new Date().getTime();
-                        if (!d.lasso) {
+                        //if (){
+                        if (!d.lasso && option.add==true) { 
 							 if ($(source).hasClass("monthdayshow"))
 							{
 								weekormonthtoday.call($(source).parent()[0],e);
@@ -2607,7 +2611,7 @@ var __SCOLLEVENTTEMP = '<DIV style="WIDTH:${width};top:${top};left:${left};" tit
                         }
                         break;
                     case 6:
-                    case 7:
+                    case 7: 
                         if (d.lasso) {
                             d.cpwrap.remove();
                             d.lasso.remove();

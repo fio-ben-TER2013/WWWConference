@@ -4,7 +4,7 @@ imports:
     - { resource: @IDCISimpleScheduleBundle/Resources/config/config.yml}
 framework:
     #esi:             ~
-    #translator:      { fallback: %locale% }
+    translator:      { fallback: %locale% }
     secret:          %secret%
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -68,3 +68,11 @@ twig:
     form:
         resources:
             - 'IDCISimpleScheduleBundle:Form:duration_widget.html.twig'
+            
+fos_user:
+    db_driver:     orm                              # Le type de BDD à utiliser, nous utilisons l'ORM Doctrine depuis le début
+    firewall_name: main                             # Le nom du firewall derrière lequel on utilisera ces utilisateurs
+    user_class:    fibe\SecurityBundle\Entity\User  # La classe de l'entité User que nous utilisons         
+
+
+

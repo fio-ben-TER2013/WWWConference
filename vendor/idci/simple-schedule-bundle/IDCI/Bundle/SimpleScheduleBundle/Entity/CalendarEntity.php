@@ -12,7 +12,7 @@ namespace IDCI\Bundle\SimpleScheduleBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
+use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation; 
 
 /**
  * This entity is based on the "VEVENT", "VTODO", "VJOURNAL" components
@@ -32,7 +32,8 @@ use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
  *     "locationAwareCalendarEntities"="LocationAwareCalendarEntity",
  *     "event"="Event",
  *     "todo"="Todo",
- *     "journal"="Journal"
+ *     "journal"="Journal",
+ *     "confEvent"="fibe\Bundle\WWWConfBundle\Entity\ConfEvent"
  * })
  */
 class CalendarEntity

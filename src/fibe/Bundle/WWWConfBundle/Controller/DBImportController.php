@@ -7,7 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use IDCI\Bundle\SimpleScheduleBundle\Entity\Event; 
+use fibe\Bundle\WWWConfBundle\Entity\ConfEvent as Event; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Category; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\Location; 
 use IDCI\Bundle\SimpleScheduleBundle\Entity\XProperty; 
@@ -20,10 +20,13 @@ use IDCI\Bundle\SimpleScheduleBundle\Entity\CalendarEntityRelation;
  */
 class DBImportController extends Controller
 {
+
 /**
- * @Route("", name="wwwconf_admin_DBimport") 
+ * @Route("/{wwwConfId}", name="wwwconf_admin_DBimport") 
  */
-    public function importAction(Request $request)
+  
+      
+    public function importAction(Request $request,$wwwConfId)
     {  
         $JSONFile = json_decode($request->request->get('dataArray'),true); 
         $em = $this->getDoctrine()->getManager(); 
@@ -60,7 +63,7 @@ class DBImportController extends Controller
             }
             $entity= new Category();
             foreach ($current as $setter => $value) {
-                if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
+                //if($setter!="setStartAt" && $setter!="setEndAt")echo "Event->".$setter."(".$value.");\n"; 
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
             $entity->setColor($colorArray[$i]);
@@ -96,7 +99,9 @@ class DBImportController extends Controller
                 
                 call_user_func_array(array($entity, $setter), array($value)); 
             }
-            
+            $entity->setWwwConf(  $this->getDoctrine()
+                                       ->getRepository('fibeWWWConfBundle:WwwConf')
+                                       ->find($wwwConfId) );
             $em->persist($entity); 
             array_push($eventEntities,$entity); 
         }
@@ -142,6 +147,7 @@ class DBImportController extends Controller
 
         return new Response("ok");
     } 
+    
 }
 
  /** 

@@ -27,6 +27,7 @@ return array(
     'JMS\\' => $vendorDir . '/jms/parser-lib/src/',
     'IDCI\\Bundle\\SimpleScheduleBundle' => $vendorDir . '/idci/simple-schedule-bundle/',
     'IDCI\\Bundle\\ExporterBundle' => $vendorDir . '/idci/exporter-bundle/',
+    'FOS\\UserBundle' => $vendorDir . '/friendsofsymfony/user-bundle/',
     'Doctrine\\ORM' => $vendorDir . '/doctrine/orm/lib/',
     'Doctrine\\DBAL' => $vendorDir . '/doctrine/dbal/lib/',
     'Doctrine\\Common\\Lexer\\' => $vendorDir . '/doctrine/lexer/lib/',
