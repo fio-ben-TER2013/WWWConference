@@ -63,7 +63,10 @@ Now to create the database and install the assets.
 		
 ----------------		
 Start your Apache server and go to :
+
+
 	- http://localhost/WWWConf/WWWConference/web/app_dev.php/admin/
+	
 	
 	You are ready to use the WWWConference Bundle !!!!!!!!! Welcome!!!!!!!!
 
@@ -173,6 +176,7 @@ About form :
 							Xnamespace : "publication_uri"
 							Xkey : publication name 
 							Xvalue : publication uri 
+							
 	Then click on the button "Add".
 	
 Create a new Event Relation : Child, Sibling, Parents
@@ -208,6 +212,7 @@ Create :
 		Top Menu > Location > Create a New Entry > Fill out form > Create.
 
 		About the form :
+		
 				- Name : Name of the Location 
 				- Description : add informations about the location
 				- Latitude and Longitude
