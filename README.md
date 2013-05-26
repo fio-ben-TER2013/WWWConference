@@ -3,10 +3,10 @@ WWWConference
 
 Web application for WWW Conference data (events, papers...)
 
-INSTALLATION INSTRUCTIONS 
+#INSTALLATION INSTRUCTIONS 
 
 ----------------
-Requirements 
+##Requirements
 
 	- Apache Server, php (Wamp,Mamp...).
 	- Git : http://git-scm.com/.
@@ -14,20 +14,23 @@ Requirements
 	- Symfony 2.
 
 ----------------
-Clone Repository 
+##Clone Repository
 
 In your git xterm enter those commands : 
 
 
-	- cd <path to the www folder of your Apache Server>
-	- git clone https://github.com/fio-ben-TER2013/WWWConference.git
+	cd <path to the www folder of your Apache Server>
+	git clone https://github.com/fio-ben-TER2013/WWWConference.git
 
 	
 	
 Next, create a parameters.yml file and copy this text in :
 
 
+
+<code>
 parameters:
+
     database_driver:   pdo_mysql
     database_host:     127.0.0.1
     database_port:     ~
@@ -45,7 +48,8 @@ parameters:
     
     bootstrap_source:  http://twitter.github.com/bootstrap/assets/bootstrap.zip
     max_per_page:      20
-	
+</code>	
+
 
 
 For  "database_user" put your phpmyadmin user name, and "database_password" , and use your PhpMyAdmin password.
@@ -54,16 +58,16 @@ After that, save and add this file to : WWWConference/app/config
 Return in your Git xterm : 
 
 
-	- cd WWWConference 
-	- composer update 
+	cd WWWConference 
+	composer update 
 
 ----------------
 Now to create the database and install the assets.
 	In your Git xterm :
 	
-		- php app/console doctrine:database:create
-		- php app/console doctrine:schema:update --force
-		- php app/console assets:install web
+		php app/console doctrine:database:create
+		php app/console doctrine:schema:update --force
+		php app/console assets:install web
 
 		
 ----------------		
@@ -78,18 +82,18 @@ Start your Apache server and go to :
 	
 	
 	
-USER MANUAL 
+#USER MANUAL
 
 ----------------
-About Conferences :
+#About Conferences :
 
 	You can import your events in WWWConference database. For that create a new Conference(see How create a new Conference ? section) .
 	You can easily see and manage them with the schedule view.
 	You can create several Conference with your account.
 
 ----------------
-About Link : 
-What is an event Link ? 
+#About Link :
+##What is an event Link ? 
 
 	With wwwConference you can Link your event with a metadata on the web, for example a Publication or an other Event. 
 	A Link have a type (Xnamespace), the name of the object linked (Xkey) and his uri (Xvalue).
@@ -97,12 +101,12 @@ What is an event Link ?
 	The link is created by the Xproperty object. This is a member of an event. Is composed by : Xnamespace, Xkey, Xvalue.(see How to create a Link ? section)
 
 ----------------
-About Relation Event :
+#About Relation Event :
 
 	You can create relations between events : Parent, Sibling, Child. A relation contain the name event linked and the relation type.
 
 ----------------
-How to create a Link ? 
+#How to create a Link ?
 
 	See "How to create or remove an Event ?" section.
 			Also you can go to the schedule view,  and click on the event you want to set up a link to.
@@ -113,49 +117,49 @@ How to create a Link ?
 				- Click on "Add"
 		
 ----------------
-How to edit a link ? 
+#How to edit a link ?
 
 	See "How to edit event ?" section.
 
 
 ----------------
-How to create or remove a new Conference ?
+#How to create or remove a new Conference ?
 
-Create Conference :
+##Create Conference :
 
 	Click on "Manage Conferences". Here you can manage your conferences and create a new one.
 	Main Page >  Manage Conferences > fill out "Import SWC Ontology" and "Sparql Config" > Process Import
 
-Delete Conference : 
+##Delete Conference : 
 
 	Click on "Manage Conferences". Select your conference and click on "Delete".
 	Main Page >  Manage Conferences > Select the Conference to delete > Delete
 
 ----------------
-How to edit and see schedule of a conference ? 
+#How to edit and see schedule of a conference ?
 
 	Click on "Manage Conferences". Select your conference and click on "Schedule view". On this calendar you can Add, Edit, Delete, Consult events of the selected conference.
 	Main Page >  Manage Conferences > Select the Conference to delete > View Schedule
 
-2nd Option :
+##2nd Option :
 
 	Click on the dropdown button "Manage Schedule" on the top menu, and select your conference.
 
-3rd Option :
+##3rd Option :
 
 	On the main page,click on the "Manage Schedule" green button. 
 	If you have several Conferences available, click on the right(list button) of the green button "Manage Schedule", and choose your conference.
 
 
 ----------------
-How to create or remove an event ?
+#How to create or remove an event ?
 
-Create an Event :
+##Create an Event :
 
 	In the main Page click on "Event" on the top menu. Then click on "Create a new Entry" fill out the form and click on "Create".
 	Top Menu > Event > Create a New Entry > Fill out form > Create.
 
-About form :
+##About form :
 
 	- Summary : event title 
 	- Categories : Choose categories among created categories (see How to create category ?)
@@ -184,17 +188,17 @@ About form :
 							
 	Then click on the button "Add".
 	
-Create a new Event Relation : Child, Sibling, Parents
+##Create a new Event Relation : Child, Sibling, Parents
 
 	Choose an event with the dropdown button "Related To", then choose your relation type with "Relation Type" dropdown button.
 
-Remove an Event : 
+##Remove an Event : 
 
 	On the main page, click on "Event" on the top menu. Then click on the "Edit" button of the event you wanna delete, and click on "Delete".
 	Top Menu > Event > Choose Event > Edit > Delete.
 
 ----------------
-How to edit an event ?
+#How to edit an event ?
 
 	On the main page click on "Event" on the top menu. Then, click on "Edit" button. Make your changes and click on "Edit" to save them.
 	Top Menu > Event > Edit > make your modifications > Edit.
@@ -203,16 +207,16 @@ How to edit an event ?
 	- "Relatedto" and "Relationtype" see "About event relation" or "How create or remove an event ?" 
 
 ----------------
-How to show an event ?
+#How to show an event ?
 
 	On the top menu click on "Event", and click on "show" button to show your event.
 		You can see all Event elements and also Link and Relation.
 
 
 ----------------
-How to create or remove a Location ? 
+#How to create or remove a Location ?
 
-Create :
+##Create :
 	In the main Page click on "Location" on the top menu. Then click on "Create a new Entry" fill out the form and click on "Create".
 		Top Menu > Location > Create a New Entry > Fill out form > Create.
 
@@ -222,38 +226,38 @@ Create :
 				- Description : add informations about the location
 				- Latitude and Longitude
 
-Remove : 
+##Remove : 
 
 	In the main Page click on "Location" on the top menu. Then click on "Edit" button of the event to delete , and click on "Delete".
 	Top Menu > Location > Choose Location > Edit > Delete.
 
 ----------------
-How to edit a Location ? 
+#How to edit a Location ?
 
 	In the main Page click on "Location" on the top menu. Then click on "Edit" button.
 	Top Menu > Location > Choose Location > Edit > fill out the form > Edit(save changes)
 
 
 ----------------
-How to create or remove a Status(event status) ? 
+#How to create or remove a Status(event status) ?
 
-Create :
+##Create :
 
 	In the main Page click on "Status" on the top menu. Then click on "Create a new Entry" fill out the form and click on "Create".
 	Top Menu > Status > Create a New Entry > Fill out form > Create.
 
-About the form :
+##About the form :
 
 		- Value : Status name. For example "Canceled"
 		- Calendar Entity : Choose "event"
 
-Remove : 
+##Remove : 
 
 	In the main Page click on "Status" on the top menu. Then click on "Edit" button of the event to delete, and click on "Delete".
 	Top Menu > Status > Choose Status > Edit > Delete.
 
 ----------------
-About the schedule view ? 
+#About the schedule view ? 
 
 	Edit Event : Click on the event you wanna change to launch the edit form.(see How to edit an event ? section).
 		You can change StarAt and EndAt event, in order to do that change the size of the event button or drag it.
