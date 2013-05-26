@@ -18,9 +18,12 @@ Clone Repository
 
 In your git xterm enter those commands : 
 
+
 	- cd <path to the www folder of your Apache Server>
 	- git clone https://github.com/fio-ben-TER2013/WWWConference.git
 
+	
+	
 Next, create a parameters.yml file and copy this text in :
 
 
@@ -49,6 +52,8 @@ For  "database_user" put your phpmyadmin user name, and "database_password" , an
 After that, save and add this file to : WWWConference/app/config
 
 Return in your Git xterm : 
+
+
 	- cd WWWConference 
 	- composer update 
 
