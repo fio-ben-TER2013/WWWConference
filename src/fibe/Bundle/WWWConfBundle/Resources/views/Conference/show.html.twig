@@ -89,7 +89,7 @@
           
          $(document).ready(function(){
             
-            var confOwlUriHelper = '<h4 class="text-success">Import SWC Ontology</h4>\
+            var confOwlUriHelper = '<h4 class="text-success">Import SWC Ontology <i>(optional)<i></h4>\
                                     <h4>Please, provide a complete Conf RDF File </h4>\
                                     <h5 class="muted"><i>(such as : http://data.semanticweb.org/conference/eswc/2013/complete)</i></h5>';
             
@@ -104,12 +104,18 @@
             
             $('#myModal').modal();  
 
-            var confUriInput = $('#fibe_bundle_wwwconfbundle_wwwconftype_confUri' );
             var confOwlUriInput = $('#fibe_bundle_wwwconfbundle_wwwconftype_confOwlUri' );
+            var confUriInput = $('#fibe_bundle_wwwconfbundle_wwwconftype_confUri' );
+            var confNameInput = $('#fibe_bundle_wwwconfbundle_wwwconftype_confName' );
 
-            var isConfUriInputOK = false; 
             var isConfOwlUriInputOK = false;
-
+            var isConfUriInputOK = false; 
+            var isconfNameInputOK = true; 
+            
+            confOwlUriInput.change(function(){ isConfOwlUriInputOK = false});
+            confUriInput.change(function(){isConfUriInputOK = false}); 
+            confNameInput.change(function(){isconfNameInputOK = false}); 
+            
             var ConfRdfFile; 
             var confName;
             
@@ -117,25 +123,53 @@
             confUriInput.before(confUriHelper) 
             confOwlUriInput.before(confOwlUriHelper) 
             $('#SWCLinkForm label').remove();
-
+            
             $('#SWCLinkForm').submit(function(event) {
                 event.preventDefault(); 
-                
-                
+                if(confOwlUriInput.val() == "" ){
+                    isConfOwlUriInputOK = true;
+                    confOwlUriInput.parent().addClass('control-group success');
+                    
+                    if(confNameInput.val() != "" ){
+                        isconfNameInputOK = true;
+                        confNameInput.parent().addClass('control-group success'); 
+                    }else{
+                        isconfNameInputOK = false;
+                        confNameInput.parent().addClass('control-group error');
+                    
+                    }
+                } 
                 
                 //test confUriInput : owl file
-                if( !isConfOwlUriInputOK)
+                
+                if( !isConfOwlUriInputOK )
                 {
                     run(confOwlUriInput.val(),function(dataArray,confname)
-                    { 
+                    {
                         ConfRdfFile = dataArray ; 
                         confName=confname;
-                        $('#fibe_bundle_wwwconfbundle_wwwconftype_confName').val(confName);
-                        isConfOwlUriInputOK = true;
-                        send();
+                        confNameInput.val(confName);
+                        confNameInput.parent().addClass('control-group success');
+                        $.ajax({ //import swc
+                            type: "POST",
+                            url:"{{ path('wwwconf_conference_show') }}",
+                            async: false,
+                            cache: false,
+                            data: $('#SWCLinkForm').serialize(),
+                            success:function(wwwConfId,b,c) 
+                            {
+                                isConfOwlUriInputOK = true;
+                                confOwlUriInput.parent().addClass('control-group success');
+                                send();
+                            }
+                            ,error:function(a,b,c)
+                            {
+                                confOwlUriInput.parent().addClass('control-group error');
+                            },
+                        });
                     },function()
-                    {  
-                            confOwlUriInput.parent().addClass('control-group error');
+                    {
+                        confOwlUriInput.parent().addClass('control-group error');
                     });
                 }
                 
@@ -164,17 +198,9 @@
             }); 
             
             function send(){
-                if(isConfUriInputOK && isConfOwlUriInputOK ) {
-                 $.ajax({ //import swc
-                                type: "POST",
-                                url:"{{ path('wwwconf_conference_show') }}",
-                                async: false,
-                                cache: false,
-                                data: $('#SWCLinkForm').serialize(),
-                                success:function(wwwConfId,b,c) 
-                                { 
-                                    
-                                    $.ajax({ //import swc
+                if(isConfUriInputOK && isConfOwlUriInputOK && isconfNameInputOK ) {
+                    if(confOwlUriInput.val() == "" )wwwConfId=confNameInput.val()
+                    $.ajax({ //import swc
                                         type: "POST",
                                         cache: false, 
                                         url: "{{ app.request.getBaseURL() }}/admin/link/DBimport/"+wwwConfId ,
@@ -190,16 +216,7 @@
                                             alert("The conf file has been found, but import failed");
                                             confOwlUriInput.parent().addClass('control-group error');
                                         },
-                                    }); 
-                                    
-                                }
-                                ,error:function(a,b,c)
-                                { 
-                                    isConfOwlUriInputOK = false; 
-                                    confOwlUriInput.parent().addClass('control-group error');
-                                },
-                            });
-                    
+                    });
                 }
             }
          }); 

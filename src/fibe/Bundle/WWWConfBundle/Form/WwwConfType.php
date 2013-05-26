@@ -12,9 +12,11 @@ class WwwConfType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('confName', 'hidden', array('attr'  => array(
+            ->add('confName', null, array('required' => false,
+                                          'attr'  => array(
                                                     'placeholder'   => 'Conference name')))
-            ->add('confOwlUri', null, array('attr'  => array(
+            ->add('confOwlUri', null, array('required' => false,
+                                            'attr'     => array(
                                                     'placeholder'   => 'complete rdf file url')))
             ->add('confUri', null, array('attr'     => array(
                                                     'placeholder'   => 'Sparql endpoint url')))

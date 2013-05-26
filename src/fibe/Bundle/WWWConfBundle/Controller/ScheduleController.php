@@ -72,7 +72,7 @@ class ScheduleController extends Controller
 	    $em = $this->getDoctrine()->getManager();
     
 	    $getData = $request->query;
-	    $methodParam = $getData->get('method', ''); 
+	    $methodParam = $getData->get('method', '');
 	    $postData = $request->request->all();
         $currentManager=$this->get('security.context')->getToken()->getUser();
 	    
@@ -80,17 +80,40 @@ class ScheduleController extends Controller
 	    
 	    if( $methodParam=="list")
 	    {
-            $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) ); 
+            $jsdate = $postData['showdate'];
+            $type= $postData['viewtype']; 
+            if(preg_match('@(\d+)/(\d+)/(\d+)\s+(\d+):(\d+)@', $jsdate, $matches)==1){
+            $jsdate = mktime($matches[4], $matches[5], 0, $matches[1], $matches[2], $matches[3]);
+            //echo $matches[4] ."-". $matches[5] ."-". 0  ."-". $matches[1] ."-". $matches[2] ."-". $matches[3];
+            }else if(preg_match('@(\d+)/(\d+)/(\d+)@', $jsdate, $matches)==1){
+            $jsdate = mktime(0, 0, 0, $matches[1], $matches[2], $matches[3]);
+            //echo 0 ."-". 0 ."-". 0 ."-". $matches[1] ."-". $matches[2] ."-". $matches[3];
+            }
 
-            $week_start = date('m/d/Y H:i', strtotime('last week last sunday', $date));
-            $week_end = date('m/d/Y H:i', strtotime('next week first monday ', $date)); 
+            //echo $jsdate . "+" . $type;
+            switch($type){
+            case "month":
+              $st = mktime(0, 0, 0, date("m", $jsdate), 1, date("Y", $jsdate));
+              $et = mktime(0, 0, -1, date("m", $jsdate)+1, 1, date("Y", $jsdate));
+              break;
+            case "week":
+              //suppose first day of a week is monday 
+              $monday  =  date("d", $jsdate) - date('N', $jsdate) + 1;
+              //echo date('N', $jsdate);
+              $st = mktime(0,0,0,date("m", $jsdate), $monday, date("Y", $jsdate));
+              $et = mktime(0,0,-1,date("m", $jsdate), $monday+7, date("Y", $jsdate));
+              break;
+            case "day":
+              $st = mktime(0, 0, 0, date("m", $jsdate), date("d", $jsdate), date("Y", $jsdate));
+              $et = mktime(0, 0, -1, date("m", $jsdate), date("d", $jsdate)+1, date("Y", $jsdate));
+              break;
+            }
+            //echo $st . "--" . $et;
+           
 
-            if($postData['viewtype']=="month")
-            {
-                $week_start = date('m/d/Y H:i', strtotime('last month last monday', $date));
-                $week_end = date('m/d/Y H:i', strtotime('next month first monday ', $date));
-            } 
-            $date = strtotime( date('m/d/Y', strtotime($postData['showdate'])) );  
+            $week_start = date($st);
+            $week_end = date($et); 
+  
             $JSONArray['start'] = $week_start;
             $JSONArray['end'] = $week_end;
             $JSONArray['error'] = null;
@@ -111,7 +134,7 @@ class ScheduleController extends Controller
                                  ->getRepository('fibeWWWConfBundle:WwwConf')
                                  ->find($confId);
                                  
-                if($conf && $conf->getConfManager() == $this->get('security.context')->getToken()->getUser()){
+                if($conf && $conf->getConfManager() == $currentManager){
                     $events = $conf->getConfEvents();
                     foreach($events as $event){ 
                         $eventsEntities[] = $event;  
@@ -157,7 +180,7 @@ class ScheduleController extends Controller
                          ->getRepository('fibeWWWConfBundle:WwwConf')
                          ->find($confId);
                              
-            if($conf && $conf->getConfManager() == $this->get('security.context')->getToken()->getUser()){
+            if($conf && $conf->getConfManager() == $currentManager){
                       
                     
                 $event= new Event();
@@ -198,7 +221,7 @@ class ScheduleController extends Controller
             $em->persist($event);
             $em->flush();  
             $JSONArray['IsSuccess'] = true;
-            $JSONArray['Msg'] = "Succefully";
+            $JSONArray['Msg'] = "Successfully";
         }
 	    
         $response = new Response(json_encode($JSONArray));

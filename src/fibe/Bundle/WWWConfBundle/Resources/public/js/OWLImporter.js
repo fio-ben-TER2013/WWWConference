@@ -51,11 +51,11 @@
                         
                             if(this.nodeName=="rdfs:comment"){
                             
-                              location['setDescription']= location.setDescription+$(this).text().split(/\x26/).join("%26").split(/\x3D/).join("%3D")+", ";
+                              location['setDescription']= format(location.setDescription+$(this).text())+", ";
                               
                             }else if(this.nodeName=="rdfs:label"){ 
                             
-                              location['setName']=$(this).text().split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                              location['setName']=format($(this).text());
                               
                             }
                             
@@ -150,7 +150,7 @@
                                     if(this.nodeName=="dce:title")
                                     {  
                                       //to finally store it in the setXKey !
-                                      xproperties[i]['setXKey']=$(this).text().split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                                      xproperties[i]['setXKey']=format($(this).text());
                                     }
                                 });
                             }
@@ -189,7 +189,8 @@
                                     if(this.nodeName=="dce:title" || this.nodeName=="rdfs:label"  || this.nodeName=="dc:title" )
                                     {
                                         //to finally store it in the setXKey !
-                                        xproperty.setXKey=$(node).text().split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                                        xproperty.setXKey=format($(node).text());
+                                        console.log(xproperty.setXKey);
                                     }
                                 });
                                 xproperties.push(xproperty);
@@ -271,7 +272,7 @@
                 
                     if(this.nodeName=="rdfs:label"){   // LABEL 
                         // replace & caractere ... 
-                        rtnArray['setSummary']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                        rtnArray['setSummary']=format(this.textContent);
                         
                         
                     }else if(this.nodeName=="icaltzd:dtstart"){ // START AT 
@@ -301,11 +302,11 @@
                         
                     }else if(this.nodeName=="dce:description"){ // DESCRIPTION
                     
-                        rtnArray['setDescription']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                        rtnArray['setDescription']=format(this.textContent);
                         
                     }else if(this.nodeName=="swrc:abstract"){ // ABSTRACT
                     
-                        rtnArray['setComment']=this.textContent.split(/\x26/).join("%26").split(/\x3D/).join("%3D");
+                        rtnArray['setComment']=format(this.textContent);
                         
                     }else if(this.nodeName=="swc:hasRelatedDocument"){ // RELATED PUBLICATION XPROP
                     
@@ -621,18 +622,31 @@
            
            
             function getNodeName(node){
-                var uri=undefined;
+                var uri=[]; 
                 $(node).children().each(function(){ 
                     if(this.nodeName.indexOf("rdf:type")!== -1 ){    
-                        uri = $(this).attr('rdf:resource').split('#')[1];
+                        uri.push($(this).attr('rdf:resource').split('#')[1]); 
                     } 
                 });
+                if(uri.length==1)
+                {
+                    return uri[0];
+                }
+                else if(uri.length==0)
+                {
+                    return undefined;
+                }
+                else if($.inArray('KeynoteTalk', uri) > -1)
+                { 
+                    return 'KeynoteEvent';
+                }
                 return uri;
+                    
             }
            
        },
        error:function(){
-                if(fallback!=undefined)fallback();
+                if(fallback)fallback();
        }
    });
 }
@@ -645,7 +659,12 @@
 
 
 
-
+function format(string){
+    return string.replace(/(\r\n|\n|\r)/gm," ")//line break
+                 .replace(/\s+/g," ")//spaces
+                 .split(/\x26/).join("%26").split(/\x3D/).join("%3D")// & caract
+                 ;
+}
 
 
 

@@ -63,6 +63,10 @@ class WwwConf
     */
     private $confManager;
     
+    public function __toString() 
+    {
+        return $this->confName;
+    }
     
     public function getId()
     {
