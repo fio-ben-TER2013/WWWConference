@@ -29,11 +29,13 @@ abstract class CalendarEntityType extends AbstractType
 
         $builder
             ->add('summary')
-            ->add('categories')
-            ->add('startAt', 'datetime', array( 
-                'years'   => range(date('Y')-1, date('Y')+5),
-                'minutes' => range(0, 59, 5)
+            ->add('categories') 
+            ->add('startAt', 'datetime', array(  
+                'widget' =>'single_text',
+                'format' =>'dd/MM/yyyy hh:mm', 
+                'attr' => array('class' => 'datetimepicker')
             ))
+            /*
             ->add('options', 'choice', array(
                 'choices' => array(
                     'all_day' => 'All the day',
@@ -44,20 +46,21 @@ abstract class CalendarEntityType extends AbstractType
             ))
             ->add('includedRule', new RecurType(), array(
                 'required' => false
-            ))
+            ))*/
             ->add('url')
             ->add('description')
             ->add('status', 'entity', array(
+                'required'      => false,
                 'class'         => 'IDCISimpleScheduleBundle:Status',
                 'query_builder' => function(StatusRepository $sr) use($discr) {
                     return $sr->getDiscrStatusQueryBuilder($discr);
                 }
-            ))
+            ))/*
             ->add('classification', 'choice', array(
                 'choices'  => CalendarEntity::getClassifications(),
                 'multiple' => false,
                 'expanded' => true
-            ))
+            ))*/
             ->add('comment')
             ->add('organizer')
             ->add('contacts')

@@ -69,11 +69,9 @@ class StatusController extends Controller
             throw $this->createNotFoundException('Unable to find Status entity.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
 
         return array(
             'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
         );
     }
 
@@ -144,13 +142,11 @@ class StatusController extends Controller
             throw $this->createNotFoundException('Unable to find Status entity.');
         }
 
-        $editForm = $this->createForm(new StatusType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createForm(new StatusType(), $entity); 
 
         return array(
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'edit_form'   => $editForm->createView(), 
         );
     }
 
@@ -169,8 +165,7 @@ class StatusController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Status entity.');
         }
-
-        $deleteForm = $this->createDeleteForm($id);
+ 
         $editForm = $this->createForm(new StatusType(), $entity);
         $editForm->bind($request);
 
@@ -192,72 +187,7 @@ class StatusController extends Controller
 
         return array(
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'edit_form'   => $editForm->createView(), 
         );
-    }
-
-    /**
-     * Deletes a Status entity.
-     *
-     * @Route("/{id}/delete", name="admin_schedule_status_delete")
-     * @Method("POST")
-     */
-    public function deleteAction(Request $request, $id)
-    {
-        $form = $this->createDeleteForm($id);
-        $form->bind($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('IDCISimpleScheduleBundle:Status')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Status entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
-            
-            $this->get('session')->getFlashBag()->add(
-                'info',
-                $this->get('translator')->trans('%entity%[%id%] has been deleted', array(
-                    '%entity%' => 'Status',
-                    '%id%'     => $id
-                ))
-            );
-        }
-
-        return $this->redirect($this->generateUrl('admin_schedule_status'));
-    }
-    
-    /**
-     * Display Status deleteForm.
-     *
-     * @Template()
-     */
-    public function deleteFormAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('IDCISimpleScheduleBundle:Status')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Status entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
-
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
-        ;
-    }
+    } 
 }

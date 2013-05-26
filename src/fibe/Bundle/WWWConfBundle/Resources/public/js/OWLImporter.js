@@ -327,6 +327,9 @@
                         var locationId = getLocationIdFromUri($(this).attr('rdf:resource'));
                         rtnArray['setLocation']=locationId;
                         
+                    } else if(this.nodeName=="foaf:homepage"){   // url
+                        
+                        rtnArray['setUrl']=format($(this).attr('rdf:resource')); 
                     } 
                     
                 });  

@@ -55,7 +55,7 @@ class ConferenceController extends Controller
      
     
 /**
- * @Route("/delete-{wwwConfId}", name="wwwconf_admin_delete_conf") 
+ * @Route("/delete-{wwwConfId}", name="wwwconf_admin_delete_conf")
  */
   
       
@@ -66,7 +66,12 @@ class ConferenceController extends Controller
                          ->getRepository('fibeWWWConfBundle:WwwConf')
                          ->find($wwwConfId);
         if($entity->getConfManager() == $this->get('security.context')->getToken()->getUser() )
-        { 
+        {
+            $events = $entity->getConfEvents();
+            foreach($events as $event){
+                if($event->getLocation())$em->remove($event->getLocation()); 
+                $em->remove($event);
+            }  
             $em->remove($entity);
             $em->flush();
             return new Response("deleted");

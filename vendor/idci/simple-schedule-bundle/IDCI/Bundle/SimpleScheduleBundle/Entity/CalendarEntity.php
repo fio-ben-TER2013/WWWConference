@@ -111,7 +111,7 @@ class CalendarEntity
      * This property specifies non-processing information intended
      * to provide a comment to the calendar user.
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=4047, nullable=true)
      */
      protected $comment;
 
@@ -276,10 +276,10 @@ class CalendarEntity
      protected $xProperties;
 
     /**
-     * status
+     * statusd
      *
      * @ORM\ManyToOne(targetEntity="Status", inversedBy="calendarEntities")
-     * @ORM\JoinColumn(name="status_id", referencedColumnName="id", onDelete="Set null")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id", onDelete="Set null", nullable=true)
      */
     protected $status;
 

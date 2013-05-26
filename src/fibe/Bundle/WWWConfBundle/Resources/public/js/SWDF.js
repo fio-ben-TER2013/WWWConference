@@ -2,7 +2,7 @@ function SWDF(SWDFUrl){
 //private
     var self=this;
     var $qry=null;
-    var $XMLresult=null;
+    var $XMLresult=undefined;
     var $SWDFUrl=SWDFUrl; 
     var $prefix = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX swrc: <http://swrc.ontoware.org/ontology#> PREFIX swrc-ext: <http://www.cs.vu.nl/~mcaklein/onto/swrc_ext/2005/05#> PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> PREFIX ical: <http://www.w3.org/2002/12/cal/ical#> PREFIX swc: <http://data.semanticweb.org/ns/swc/ontology#>';
 //public 
@@ -16,21 +16,39 @@ function SWDF(SWDFUrl){
     this.toArray=toArray;//export as array
 	this.toArray2 = toArray2;
 	this.arrayResult = [ ];
+	
+	//choose between toArray & toArray
+	this.parseMtd=toArray;
+	//set autocomplete mtd
+	this.callback=undefined;
                              
     function buildQry(){ 
         $qry=$prefix +' SELECT DISTINCT '+this.$select+'  WHERE  {  '+this.$whereClause+'} ';
     }
     
-    function doQry(callback){  
+    function doQry(){
+    jQuery.support.cors = true;
         $.ajax({ 
 		        type : "GET",
 		        async : true,
-            url: $SWDFUrl,
-            dataType: 'xml', 
-		        data :  {output : 'xml' ,query : $qry}, 
+                url: $SWDFUrl, 
+		        data :  { query : $qry}, 
 		        success : function(xml){ 
 				          self.$XMLresult=xml;
-                  if(callback)callback();
+				          self.parseMtd();
+	              },
+	              error : function(){
+	              jQuery.support.cors = false;
+                  $.ajax({ 
+		                type : "GET",
+		                async : true,
+                        url: $SWDFUrl, 
+		                data :  { query : $qry}, 
+		                success : function(xml){ 
+				                  self.$XMLresult=xml;
+				                  self.parseMtd();
+	                      }, 
+		            }); 
 	              }
 		    }); 
               
@@ -59,13 +77,13 @@ function SWDF(SWDFUrl){
 	         }
         });
         //console.log(self.returnArray);
-			 $.extend(self.arrayResult,returnArray);
-			  //self.arrayResult = returnArray;
+        $.extend(self.arrayResult,returnArray);
+        //self.arrayResult = returnArray;
+        self.callback(returnArray);
         return returnArray;
     }
 
-function toArray2(){
-console.log("go to array 2");
+function toArray2(){ 
         var returnArray= [ ];
         var i=0; 
 	   $(self.$XMLresult).find("sparql > results > result").each(function(){
@@ -80,10 +98,10 @@ console.log("go to array 2");
 				
 	             }); 
 	             i++; 
-	         });
-			 returnArray[2]['uri']
-			 $.extend(self.arrayResult,returnArray);
-			 //self.arrayResult = returnArray;
+	         }); 
+        $.extend(self.arrayResult,returnArray);
+        //self.arrayResult = returnArray;
+        self.callback(returnArray);
         return returnArray;
     }	
 }

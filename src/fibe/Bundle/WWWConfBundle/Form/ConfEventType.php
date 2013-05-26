@@ -15,6 +15,8 @@ class ConfEventType extends EventType
         parent::buildForm($builder, $options);
         $builder
             ->add('wwwConf', null, array(
+                                    'required'  => true,
+                                    'label'     => 'Belongs to conf'
             ))
         ;
     }

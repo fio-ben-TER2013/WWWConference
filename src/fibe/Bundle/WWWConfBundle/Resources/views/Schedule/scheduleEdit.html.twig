@@ -118,9 +118,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th>LIink Type</th>
-            <th>Key</th>
-            <th>Value</th>
+            <th>Link Type</th>
+            <th>Name</th>
+            <th>Uri</th>
         </tr>
     </thead>
     
@@ -197,7 +197,7 @@
         {% for relation in entity.getRelateds() %} 
             <tr> 
                 <td>{{ relation.id }}</td>
-                <th>{{ relation.relationType }}</th>
+                <td>{{ relation.relationType }}</td>
                 <td>{{ relation.relatedTo.startAt | date('Y-m-d') }}</td>
                 <td>{{ relation.relatedTo.summary }}</td>
             </tr> 
@@ -248,7 +248,19 @@
 
     .form-horizontal .control-group {
        margin-bottom: 7px; 
-    } 
+    }
+    .form-horizontal .control-label{
+        width: 90px;
+    }
+    .form-horizontal .controls {
+        margin-left: 110px;
+    }
+    .ui-menu .ui-menu-item a{
+        line-height: 1;
+        font-size: .8em;
+        width: 442px;
+    }
+    
  </style>
 {% endblock stylesheets %}
 
@@ -297,44 +309,42 @@ function autoCompletePublication(){
     
     var swdf=new SWDF("{{ SparqlUrl }}");
     swdf.buildQry();
-    swdf.doQry(swdf.toArray);
+      
+	swdf.callback= function(arrayResult){autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),arrayResult)};
+	/*swdf.callback= function(arrayResult){
+	    var tmpArr = [];
+	    $.each(arrayResult,function(){
+	       tmpArr.push(this.value); 
+	    });
+	    $('#idci_bundle_simpleschedulebundle_xpropertytype_xkey').typeahead(
+        {
+            source:  tmpArr,
+            updater : function(item){
+                $("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(item.uri).addClass("inputSuccess");
+                $('#form_xvalue').val(item.uri);
+                $('#form_xkey').val(item.uri);
+                $("#uriLink div").removeClass("warning").addClass("success");
+                $("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
+            }
+
+        });
+    };*/
+    swdf.doQry();
     console.log(swdf);
 	console.log(swdf.arrayResult);
-	 
- /*  $('#idci_bundle_simpleschedulebundle_xpropertytype_xkey').typeahead({source:  function() {  return swdf.arrayResult; },
-																												updater : function(item){
-																														$("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(item.uri).addClass("inputSuccess");
-																														$('#form_xvalue').val(item.uri);
-																														$('#form_xkey').val(item.uri);
-																														$("#uriLink div").removeClass("warning").addClass("success");
-																														$("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
-																												}
-   
-																								});*/
-   autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),swdf.arrayResult);
-    
 }
 
 function autoCompleteEvent(){
     
     var swdf=new SWDF("{{ SparqlUrl }}");
-	swdf.$select = 	'   ?uriEvent ?eventLabel   '; 
+	swdf.$select = 	     ' ?uriEvent ?eventLabel   '; 
 	swdf.$whereClause =  ' ?uriEvent rdfs:label ?eventLabel. '+
-								     ' ?uriEvent rdf:type swc:TrackEvent.   ';
+					     ' ?uriEvent rdf:type swc:TrackEvent.   ';
     swdf.buildQry();
-    swdf.doQry(swdf.toArray2);
-	console.log(swdf.arrayResult);
-	/* $('#idci_bundle_simpleschedulebundle_xpropertytype_xkey').typeahead({source:  function() { return swdf.arrayResult; },
-																												updater : function(item){
-																														$("#idci_bundle_simpleschedulebundle_xpropertytype_xvalue").val(item.uri).addClass("inputSuccess");
-																														$('#form_xvalue').val(item.uri);
-																														$('#form_xkey').val(item.uri);
-																														$("#uriLink div").removeClass("warning").addClass("success");
-																														$("#submitLinkButton").removeAttr("disabled").removeClass("disabled") ;
-																												}
-   
-																								});*/
-	autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),swdf.arrayResult);
+	swdf.parseMtd=swdf.toArray2;
+	swdf.callback= function(arrayResult){autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),arrayResult)};
+    swdf.doQry();
+	console.log(swdf.arrayResult); 
 }
 
 $(document).ready(function(){ 
@@ -375,7 +385,9 @@ $(document).ready(function(){
     $('#event').submit(function(event) {
         //edit event
         event.preventDefault();
-        FormPost("{{ path('wwwconf_updateEvent', { 'id': entity.id }) }}",$(this));
+        FormPost("{{ path('wwwconf_updateEvent', { 'id': entity.id }) }}",$(this),function(){
+                alert("event updated");
+        });
          
         return false;
     }); 

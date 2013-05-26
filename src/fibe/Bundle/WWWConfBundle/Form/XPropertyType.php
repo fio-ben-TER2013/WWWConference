@@ -19,11 +19,11 @@ class XPropertyType extends AbstractType
     {
         $builder
             ->add('xnamespace', 'choice', array(
-                      'choices'   => array('publication_uri' => 'publication', 
-                                           'event_uri'       => 'event', 
-                                           'location_uri'    => 'location' )))
-            ->add('xkey')
-            ->add('xvalue')
+                      'label'   =>'Link type',
+                      'choices' => array('publication_uri' => 'publication', 
+                                           'event_uri'       => 'event')))
+            ->add('xkey', null, array('label' =>'Name'))
+            ->add('xvalue', null, array('label' =>'Uri'))
             ->add('calendarEntity', null, array(
                 'label' => ' ',
                 'attr'=> array('style'=>'display:none')

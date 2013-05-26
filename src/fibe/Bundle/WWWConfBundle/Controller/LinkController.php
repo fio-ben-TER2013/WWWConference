@@ -18,8 +18,8 @@ use IDCI\Bundle\SimpleScheduleBundle\Entity\Event;
 
 /**
  * Link controller.
- *
- * @Route("/admin/link")
+ *     
+ * @Route("/")
  */
 class LinkController extends Controller
 {

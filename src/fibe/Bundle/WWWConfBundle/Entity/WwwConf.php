@@ -41,7 +41,7 @@ class WwwConf
     /**
      * @var string
      *
-     * @ORM\Column(name="confOwlUri", type="string", length=255)
+     * @ORM\Column(name="confOwlUri", type="string", length=255,nullable=true)
      */
     private $confOwlUri;
 

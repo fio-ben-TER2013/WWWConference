@@ -215,11 +215,11 @@ class ScheduleController extends Controller
                 
             $event = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($postData['calendarId']);
             $startAt = new \DateTime($postData['CalendarStartTime'], new \DateTimeZone(date_default_timezone_get()));
-            $endAt =new \DateTime($postData['CalendarEndTime'], new \DateTimeZone(date_default_timezone_get())) ;
+            $endAt =new \DateTime($postData['CalendarEndTime'], new \DateTimeZone(date_default_timezone_get()));
             $event->setStartAt( $startAt );
             $event->setEndAt( $endAt );
             $em->persist($event);
-            $em->flush();  
+            $em->flush();
             $JSONArray['IsSuccess'] = true;
             $JSONArray['Msg'] = "Successfully";
         }
@@ -242,9 +242,26 @@ class ScheduleController extends Controller
         
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Event')->find($id);
-         
-        $WwwConf = $em->getRepository('fibeWWWConfBundle:WwwConf')->find(1);
-
+          
+        
+        //confManagerEvents 
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $entities=[]; 
+        $confs = $currentManager->getWwwConf();
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $entities[] = $event;  
+            } 
+        }
+        
+        if (!in_array($entity, $entities)) {
+            throw new AccessDeniedException('Look at your own events !!'); 
+        }
+        $WwwConf = $entity->getWwwConf();
+        //confManagerEvents
+        
+        
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Event entity.');
         }

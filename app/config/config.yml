@@ -1,7 +1,8 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml } 
-    - { resource: @IDCISimpleScheduleBundle/Resources/config/config.yml}
+#    - { resource: @IDCISimpleScheduleBundle/Resources/config/config.yml}
+    - { resource: @fibeWWWConfBundle/Resources/config/config.yml}
 framework:
     #esi:             ~
     translator:      { fallback: %locale% }
@@ -74,5 +75,4 @@ fos_user:
     firewall_name: main                             # Le nom du firewall derrière lequel on utilisera ces utilisateurs
     user_class:    fibe\SecurityBundle\Entity\User  # La classe de l'entité User que nous utilisons         
 
-
-
+ 

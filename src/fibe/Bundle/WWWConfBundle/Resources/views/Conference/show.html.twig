@@ -113,11 +113,11 @@
             var isconfNameInputOK = true; 
             
             confOwlUriInput.change(function(){ isConfOwlUriInputOK = false});
-            confUriInput.change(function(){isConfUriInputOK = false}); 
-            confNameInput.change(function(){isconfNameInputOK = false}); 
+            confUriInput.change(function(){isConfUriInputOK = false});  
             
             var ConfRdfFile; 
             var confName;
+            var owlLessMode=false;
             
             
             confUriInput.before(confUriHelper) 
@@ -129,16 +129,20 @@
                 if(confOwlUriInput.val() == "" ){
                     isConfOwlUriInputOK = true;
                     confOwlUriInput.parent().addClass('control-group success');
-                    
+                    owlLessMode=true;
                     if(confNameInput.val() != "" ){
                         isconfNameInputOK = true;
                         confNameInput.parent().addClass('control-group success'); 
+                        send();
                     }else{
                         isconfNameInputOK = false;
                         confNameInput.parent().addClass('control-group error');
                     
                     }
-                } 
+                }else
+				{
+					owlLessMode=false;
+				}
                 
                 //test confUriInput : owl file
                 
@@ -146,27 +150,15 @@
                 {
                     run(confOwlUriInput.val(),function(dataArray,confname)
                     {
+						owlLessMode=false;
+					    isConfOwlUriInputOK = true;
                         ConfRdfFile = dataArray ; 
                         confName=confname;
                         confNameInput.val(confName);
                         confNameInput.parent().addClass('control-group success');
-                        $.ajax({ //import swc
-                            type: "POST",
-                            url:"{{ path('wwwconf_conference_show') }}",
-                            async: false,
-                            cache: false,
-                            data: $('#SWCLinkForm').serialize(),
-                            success:function(wwwConfId,b,c) 
-                            {
-                                isConfOwlUriInputOK = true;
-                                confOwlUriInput.parent().addClass('control-group success');
-                                send();
-                            }
-                            ,error:function(a,b,c)
-                            {
-                                confOwlUriInput.parent().addClass('control-group error');
-                            },
-                        });
+                        confOwlUriInput.parent().addClass('control-group success');
+                        send();
+                        
                     },function()
                     {
                         confOwlUriInput.parent().addClass('control-group error');
@@ -198,25 +190,45 @@
             }); 
             
             function send(){
-                if(isConfUriInputOK && isConfOwlUriInputOK && isconfNameInputOK ) {
-                    if(confOwlUriInput.val() == "" )wwwConfId=confNameInput.val()
-                    $.ajax({ //import swc
-                                        type: "POST",
-                                        cache: false, 
-                                        url: "{{ app.request.getBaseURL() }}/admin/link/DBimport/"+wwwConfId ,
-                                        data: "dataArray=" + JSON.stringify(ConfRdfFile, null),
-                                        success:function(a,b,c)
-                                        {
-                                            alert('"'+confName+'" has been well added :\n\t'+ConfRdfFile.events.length+' events\n\t'+ConfRdfFile.locations.length+' locations\n');
-                                            window.location.reload();
-                                            
-                                        },
-                                        error:function(a,b,c)
-                                        { 
-                                            alert("The conf file has been found, but import failed");
-                                            confOwlUriInput.parent().addClass('control-group error');
-                                        },
-                    });
+                if(isConfUriInputOK && isConfOwlUriInputOK && isconfNameInputOK ) { 
+                    $.ajax({ //form post
+                            type: "POST",
+                            url:"{{ path('wwwconf_conference_show') }}",
+                            async: false,
+                            cache: false,
+                            data: $('#SWCLinkForm').serialize(),
+                            success:function(wwwConfId,b,c) 
+                            { 
+								if(owlLessMode==false){
+								    confOwlUriInput.parent().addClass('control-group success');
+								    $.ajax({ //DBimport
+								        type: "POST",
+								        cache: false, 
+								        url: "{{ app.request.getBaseURL() }}/admin/link/DBimport/"+wwwConfId ,
+								        data: "dataArray=" + JSON.stringify(ConfRdfFile, null),
+								        success:function(a,b,c)
+								        {
+								            if(ConfRdfFile!=undefined)
+								                alert('"'+confName+'" has been well added :\n\t'+ConfRdfFile.events.length+' events\n\t'+ConfRdfFile.locations.length+' locations\n');
+								            window.location.reload();
+								            
+								        },
+								        error:function(a,b,c)
+								        { 
+								            alert("The conf file has been found, but import failed");
+								            confOwlUriInput.parent().addClass('control-group error');
+								        },
+								    });
+								}else
+								{
+									window.location.reload();
+								}
+                            }
+                            ,error:function(a,b,c)
+                            {
+                                confOwlUriInput.parent().addClass('control-group error');
+                            },
+                        });
                 }
             }
          }); 

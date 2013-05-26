@@ -37,9 +37,28 @@ class LocationController extends Controller
      */
     public function indexAction(Request $request)
     {
+        
         $em = $this->getDoctrine()->getManager();
         $entities = $em->getRepository('IDCISimpleScheduleBundle:Location')->findAll();
+        
 
+        //confManagerCategories
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $confs = $currentManager->getWwwConf();
+        $entities2 = [];
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $location = $event->getLocation();
+                if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                    $entities2[] = $location;
+                }
+            } 
+        }
+        $entities = $entities2;
+        //confManagerCategories
+        
+        
         $adapter = new ArrayAdapter($entities);
         $pager = new PagerFanta($adapter);
         $pager->setMaxPerPage($this->container->getParameter('max_per_page'));
@@ -66,6 +85,28 @@ class LocationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
+ 
+
+        //confManagerCategories
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $confs = $currentManager->getWwwConf();
+        $entities2 = [];
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $location = $event->getLocation();
+                if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                    $entities2[] = $location;
+                } 
+            } 
+        } 
+        if (!in_array($location, $entities2)) {
+            throw new AccessDeniedException('Look at your own locations !!'); 
+        } 
+        //confManagerCategories
+        
+        
+        
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
@@ -110,6 +151,27 @@ class LocationController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+                
+
+            //confManagerCategories
+            $currentManager=$this->get('security.context')->getToken()->getUser();
+            $confs = $currentManager->getWwwConf();
+            $entities2 = [];
+            foreach($confs as $conf){
+                $events = $conf->getConfEvents();
+                foreach($events as $event){ 
+                    $location = $event->getLocation();
+                    if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                        $entities2[] = $location;
+                    } 
+                } 
+            } 
+            if (!in_array($location, $entities2)) {
+                throw new AccessDeniedException('Look at your own locations !!'); 
+            } 
+            //confManagerCategories
+            
+            
             $em->persist($entity);
             $em->flush();
 
@@ -141,6 +203,27 @@ class LocationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
+            
+
+        //confManagerCategories
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $confs = $currentManager->getWwwConf();
+        $entities2 = [];
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $location = $event->getLocation();
+                if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                    $entities2[] = $location;
+                } 
+            } 
+        } 
+        if (!in_array($location, $entities2)) {
+            throw new AccessDeniedException('Look at your own locations !!'); 
+        } 
+        //confManagerCategories
+        
+        
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
@@ -167,6 +250,27 @@ class LocationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
+            
+
+        //confManagerCategories
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $confs = $currentManager->getWwwConf();
+        $entities2 = [];
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $location = $event->getLocation();
+                if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                    $entities2[] = $location;
+                } 
+            } 
+        } 
+        if (!in_array($location, $entities2)) {
+            throw new AccessDeniedException('Look at your own locations !!'); 
+        } 
+        //confManagerCategories
+        
+        
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
@@ -213,6 +317,27 @@ class LocationController extends Controller
             $em = $this->getDoctrine()->getManager();
             $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
+                
+
+            //confManagerCategories
+            $currentManager=$this->get('security.context')->getToken()->getUser();
+            $confs = $currentManager->getWwwConf();
+            $entities2 = [];
+            foreach($confs as $conf){
+                $events = $conf->getConfEvents();
+                foreach($events as $event){ 
+                    $location = $event->getLocation();
+                    if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                        $entities2[] = $location;
+                    } 
+                } 
+            } 
+            if (!in_array($location, $entities2)) {
+                throw new AccessDeniedException('Look at your own locations !!'); 
+            } 
+            //confManagerCategories
+            
+            
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Location entity.');
             }
@@ -242,6 +367,27 @@ class LocationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
+            
+
+        //confManagerCategories
+        $currentManager=$this->get('security.context')->getToken()->getUser();
+        $confs = $currentManager->getWwwConf();
+        $entities2 = [];
+        foreach($confs as $conf){
+            $events = $conf->getConfEvents();
+            foreach($events as $event){ 
+                $location = $event->getLocation();
+                if (in_array($location, $entities) && !in_array($location, $entities2)) {
+                    $entities2[] = $location;
+                } 
+            } 
+        } 
+        if (!in_array($location, $entities2)) {
+            throw new AccessDeniedException('Look at your own locations !!'); 
+        } 
+        //confManagerCategories
+        
+        
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
