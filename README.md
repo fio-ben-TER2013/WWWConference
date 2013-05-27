@@ -128,7 +128,9 @@ Start your Apache server and go to :
 ##Create Conference :
 
 	Click on "Manage Conferences". Here you can manage your conferences and create a new one.
+	By default, an event without dateStart or dateEnd, have the current date with one hour duration.  
 	Main Page >  Manage Conferences > fill out "Import SWC Ontology" and "Sparql Config" > Process Import
+	
 
 ##Delete Conference : 
 
