@@ -5,9 +5,6 @@
 */cache/*
 web/uploads/*
 web/bundles/*
- 
-web/vendor/*
-!web/vendor/idci
 
 # Configuration files
 app/config/parameters.ini

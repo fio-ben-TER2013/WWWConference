@@ -29,10 +29,10 @@ abstract class CalendarEntityType extends AbstractType
 
         $builder
             ->add('summary')
-            ->add('categories') 
+            ->add('categories')
             ->add('startAt', 'datetime', array(  
                 'widget' =>'single_text',
-                'format' =>'dd/MM/yyyy hh:mm', 
+                'format' =>'dd/MM/yyyy HH:mm', 
                 'attr' => array('class' => 'datetimepicker')
             ))
             /*

@@ -203,7 +203,14 @@ class EventController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Event entity.');
         }
-
+        $this->get('session')->getFlashBag()->add(
+            'info',
+            $this->get('translator')->trans('%entity%[%id%] has been updated', array(
+                '%entity%' => 'Event',
+                '%id%'     => $entity->getId()
+            ))
+        );
+            
         $form = $this->createForm(new EventType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
 
@@ -261,7 +268,6 @@ class EventController extends Controller
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createForm(new EventType(), $entity);
         $editForm->bind($request);
-
         if ($editForm->isValid()) {
             $em->persist($entity);
             $em->flush();

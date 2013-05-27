@@ -22,7 +22,7 @@ class EventType extends LocationAwareCalendarEntityType
         $builder
             ->add('endAt', 'datetime', array(  
                 'widget' =>'single_text',
-                'format' =>'dd/MM/yyyy hh:mm', 
+                'format' =>'dd/MM/yyyy HH:mm', 
                 'attr' => array('class' => 'datetimepicker')
             ))
             ->add('isTransparent', null, array(
