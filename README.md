@@ -52,7 +52,7 @@ parameters:
 
 
 
-For  "database_user" put your phpmyadmin user name, and "database_password" , and use your PhpMyAdmin password.
+For  "database_user" put your mysql user name, and "database_password" , and use your mysql password.
 After that, save and add this file to : WWWConference/app/config
 
 Return in your Git xterm : 
@@ -69,7 +69,10 @@ Now to create the database and install the assets.
 		php app/console doctrine:schema:update --force
 		php app/console assets:install web
 
-		
+
+----------------
+Finally, create your user using the Git xterm :
+    php app/console fos:user:create admin admin@example.com admin
 ----------------		
 Start your Apache server and go to :
 
