@@ -21,11 +21,5 @@
             {% trans %}Back to the list{% endtrans %}
         </a>
     </li>
-    <li>
-        <form action="{{ path('admin_schedule_location_delete', { 'id': entity.id }) }}" method="post">
-            {{ form_widget(delete_form) }}
-            <button type="submit" class="btn btn-danger">{% trans %}Delete{% endtrans %}</button>
-        </form>
-    </li>
 </ul>
 {% endblock body %}

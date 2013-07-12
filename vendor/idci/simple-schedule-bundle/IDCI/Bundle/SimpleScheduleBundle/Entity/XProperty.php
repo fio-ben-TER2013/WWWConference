@@ -37,12 +37,12 @@ class XProperty
     protected $calendarEntity;
 
     /**
-     * @ORM\Column(type="string", length=64, name="x_namespace")
+     * @ORM\Column(type="string", length=1024, name="x_namespace")
      */
     protected $xNamespace;
 
     /**
-     * @ORM\Column(type="string", length=64, name="x_key")
+     * @ORM\Column(type="string", length=1024, name="x_key")
      */
     protected $xKey;
 

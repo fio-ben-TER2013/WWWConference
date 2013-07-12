@@ -203,6 +203,7 @@ class EventController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Event entity.');
         }
+        
         $this->get('session')->getFlashBag()->add(
             'info',
             $this->get('translator')->trans('%entity%[%id%] has been updated', array(

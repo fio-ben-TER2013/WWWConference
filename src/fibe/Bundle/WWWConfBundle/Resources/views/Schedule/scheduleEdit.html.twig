@@ -266,8 +266,7 @@
 
 
  {% block stylesheets %}
- <style type="text/css">
- </style>
+ <style type="text/css"> 
 
     .form-horizontal .control-group {
        margin-bottom: 7px; 
@@ -383,8 +382,22 @@ function autoCompleteEvent(){
     
     var swdf=new SWDF("{{ SparqlUrl }}");
 	swdf.$select = 	     ' ?uriEvent ?eventLabel   '; 
-	swdf.$whereClause =  ' ?uriEvent rdfs:label ?eventLabel. '+
-					     ' ?uriEvent rdf:type swc:TrackEvent.   ';
+	swdf.$whereClause =  '?uriEvent rdfs:label ?eventLabel.'+
+                         '{?uriEvent rdf:type swc:TrackEvent.}' +
+                         'UNION' +
+                         '{?uriEvent rdf:type swc:TalkEvent.}' +
+                         'UNION' +
+                         '{?uriEvent rdf:type swc:ConferenceEvent.}' +
+                         'UNION ' +
+                         '{?uriEvent rdf:type swc:TutorialEvent.}' +
+                         'UNION' +
+                         '{?uriEvent rdf:type swc:WorkshopEvent.}' +
+                         ' UNION ' +
+                         '{?uriEvent rdf:type swc:SessionEvent.}' +
+                         'UNION' +
+                         '{?uriEvent rdf:type swc:SocialEvent.}' +
+                         'UNION' +
+                         '{?uriEvent rdf:type swc:PanelEvent.}';
     swdf.buildQry();
 	swdf.parseMtd=swdf.toArray2;
 	swdf.callback= function(arrayResult){autoComplete($('#idci_bundle_simpleschedulebundle_xpropertytype_xkey'),arrayResult)};

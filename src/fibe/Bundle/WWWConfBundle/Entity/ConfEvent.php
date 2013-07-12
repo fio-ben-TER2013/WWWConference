@@ -19,7 +19,7 @@ class ConfEvent extends Event
     /**
      * wwwConf
      *
-     * @ORM\ManyToOne(targetEntity="fibe\Bundle\WWWConfBundle\Entity\WwwConf", inversedBy="confEvents", cascade={"persist","remove"})
+     * @ORM\ManyToOne(targetEntity="fibe\Bundle\WWWConfBundle\Entity\WwwConf", inversedBy="confEvents", cascade={"persist"})
      * @ORM\JoinColumn(name="wwwConf_id", referencedColumnName="id")
      */
     private $wwwConf;

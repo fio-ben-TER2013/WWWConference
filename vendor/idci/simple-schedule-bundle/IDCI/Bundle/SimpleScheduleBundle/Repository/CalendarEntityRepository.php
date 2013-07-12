@@ -83,8 +83,8 @@ class CalendarEntityRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('cer');
         $qb
-            ->orderBy('cer.location', 'ASC')
-            ->addOrderBy('cer.startAt', 'ASC')
+            ->orderBy('cer.startAt', 'ASC')
+            ->addOrderBy('cer.location', 'ASC')
         ;
 
         return $qb;
@@ -250,6 +250,14 @@ class CalendarEntityRepository extends EntityRepository
             ;
         }
 
+
+        if(isset($params['location_name'])) {
+            $qb
+                ->leftJoin('cer.location', 'lct')
+                ->andWhere('lct.name = :location_name')
+                ->setParameter('location_name', $params['location_name'])
+            ;
+        }
         
 
         if(isset($params['parent_id'])) {

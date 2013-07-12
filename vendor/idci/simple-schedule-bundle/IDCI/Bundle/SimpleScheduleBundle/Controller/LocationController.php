@@ -21,6 +21,7 @@ use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Exception\NotValidCurrentPageException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Location controller.
@@ -42,21 +43,6 @@ class LocationController extends Controller
         $entities = $em->getRepository('IDCISimpleScheduleBundle:Location')->findAll();
         
 
-        //confManagerCategories
-        $currentManager=$this->get('security.context')->getToken()->getUser();
-        $confs = $currentManager->getWwwConf();
-        $entities2 = [];
-        foreach($confs as $conf){
-            $events = $conf->getConfEvents();
-            foreach($events as $event){ 
-                $location = $event->getLocation();
-                if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                    $entities2[] = $location;
-                }
-            } 
-        }
-        $entities = $entities2;
-        //confManagerCategories
         
         
         $adapter = new ArrayAdapter($entities);
@@ -84,38 +70,15 @@ class LocationController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
-
- 
-
-        //confManagerCategories
-        $currentManager=$this->get('security.context')->getToken()->getUser();
-        $confs = $currentManager->getWwwConf();
-        $entities2 = [];
-        foreach($confs as $conf){
-            $events = $conf->getConfEvents();
-            foreach($events as $event){ 
-                $location = $event->getLocation();
-                if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                    $entities2[] = $location;
-                } 
-            } 
-        } 
-        if (!in_array($location, $entities2)) {
-            throw new AccessDeniedException('Look at your own locations !!'); 
-        } 
-        //confManagerCategories
-        
         
         
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
-
-        $deleteForm = $this->createDeleteForm($id);
+ 
 
         return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
+            'entity'      => $entity, 
         );
     }
 
@@ -153,23 +116,6 @@ class LocationController extends Controller
             $em = $this->getDoctrine()->getManager();
                 
 
-            //confManagerCategories
-            $currentManager=$this->get('security.context')->getToken()->getUser();
-            $confs = $currentManager->getWwwConf();
-            $entities2 = [];
-            foreach($confs as $conf){
-                $events = $conf->getConfEvents();
-                foreach($events as $event){ 
-                    $location = $event->getLocation();
-                    if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                        $entities2[] = $location;
-                    } 
-                } 
-            } 
-            if (!in_array($location, $entities2)) {
-                throw new AccessDeniedException('Look at your own locations !!'); 
-            } 
-            //confManagerCategories
             
             
             $em->persist($entity);
@@ -204,37 +150,18 @@ class LocationController extends Controller
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
             
-
-        //confManagerCategories
-        $currentManager=$this->get('security.context')->getToken()->getUser();
-        $confs = $currentManager->getWwwConf();
-        $entities2 = [];
-        foreach($confs as $conf){
-            $events = $conf->getConfEvents();
-            foreach($events as $event){ 
-                $location = $event->getLocation();
-                if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                    $entities2[] = $location;
-                } 
-            } 
-        } 
-        if (!in_array($location, $entities2)) {
-            throw new AccessDeniedException('Look at your own locations !!'); 
-        } 
-        //confManagerCategories
+ 
         
         
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
 
-        $editForm = $this->createForm(new LocationType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createForm(new LocationType(), $entity); 
 
         return array(
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'edit_form'   => $editForm->createView(), 
         );
     }
 
@@ -251,31 +178,13 @@ class LocationController extends Controller
         $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
 
             
-
-        //confManagerCategories
-        $currentManager=$this->get('security.context')->getToken()->getUser();
-        $confs = $currentManager->getWwwConf();
-        $entities2 = [];
-        foreach($confs as $conf){
-            $events = $conf->getConfEvents();
-            foreach($events as $event){ 
-                $location = $event->getLocation();
-                if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                    $entities2[] = $location;
-                } 
-            } 
-        } 
-        if (!in_array($location, $entities2)) {
-            throw new AccessDeniedException('Look at your own locations !!'); 
-        } 
-        //confManagerCategories
+ 
         
         
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Location entity.');
         }
-
-        $deleteForm = $this->createDeleteForm($id);
+ 
         $editForm = $this->createForm(new LocationType(), $entity);
         $editForm->bind($request);
 
@@ -297,114 +206,8 @@ class LocationController extends Controller
 
         return array(
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'edit_form'   => $editForm->createView(), 
         );
     }
-
-    /**
-     * Deletes a Location entity.
-     *
-     * @Route("/{id}/delete", name="admin_schedule_location_delete")
-     * @Method("POST")
-     */
-    public function deleteAction(Request $request, $id)
-    {
-        $form = $this->createDeleteForm($id);
-        $form->bind($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
-
-                
-
-            //confManagerCategories
-            $currentManager=$this->get('security.context')->getToken()->getUser();
-            $confs = $currentManager->getWwwConf();
-            $entities2 = [];
-            foreach($confs as $conf){
-                $events = $conf->getConfEvents();
-                foreach($events as $event){ 
-                    $location = $event->getLocation();
-                    if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                        $entities2[] = $location;
-                    } 
-                } 
-            } 
-            if (!in_array($location, $entities2)) {
-                throw new AccessDeniedException('Look at your own locations !!'); 
-            } 
-            //confManagerCategories
-            
-            
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Location entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
-            
-            $this->get('session')->getFlashBag()->add(
-                'info',
-                $this->get('translator')->trans('%entity%[%id%] has been deleted', array(
-                    '%entity%' => 'Location',
-                    '%id%'     => $id
-                ))
-            );
-        }
-
-        return $this->redirect($this->generateUrl('admin_schedule_location'));
-    }
-    
-    /**
-     * Display Location deleteForm.
-     *
-     * @Template()
-     */
-    public function deleteFormAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('IDCISimpleScheduleBundle:Location')->find($id);
-
-            
-
-        //confManagerCategories
-        $currentManager=$this->get('security.context')->getToken()->getUser();
-        $confs = $currentManager->getWwwConf();
-        $entities2 = [];
-        foreach($confs as $conf){
-            $events = $conf->getConfEvents();
-            foreach($events as $event){ 
-                $location = $event->getLocation();
-                if (in_array($location, $entities) && !in_array($location, $entities2)) {
-                    $entities2[] = $location;
-                } 
-            } 
-        } 
-        if (!in_array($location, $entities2)) {
-            throw new AccessDeniedException('Look at your own locations !!'); 
-        } 
-        //confManagerCategories
-        
-        
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Location entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
-
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
-        ;
-    }
+ 
 }

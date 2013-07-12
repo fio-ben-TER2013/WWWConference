@@ -35,7 +35,7 @@
             var proceedings= [];
             var confName ;
              
-            var defaultDate='1980-01-01T00:00:00+00:00'
+            var defaultDate='now'; 
             //////////////////////////////////////////////////////////////////////////
             ///////////////////////  first round for locations  //////////////////////
             //////////////////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@
                     }else{
                         
                         events[i]['setStartAt']= defaultDate ;
-                        events[i]['setEndAt']=defaultDate ;
+                        events[i]['setEndAt']=moment().add('h', 1).format('YYYY-MM-DDTHH:mm:ss Z') ;
                     }
                 }
             
